@@ -13,7 +13,7 @@ Mismo criterio que en SanluFilm, y hereda sus cicatrices.
 | Proyecto | `ERP Financiera` · `df6b54d5-5aaf-4de5-a7dd-2bb4981135b7` |
 | Entorno | `production` · `345fd301-8e2b-4bda-8450-0d5356997ac8` |
 | Servicio | `api` · `476b9269-e272-4b21-8b04-06d40f5604a7` |
-| Dominio | `api-production-dc98.up.railway.app` |
+| Dominio | `api-production-0792.up.railway.app` (puerto 8080) ✅ verificado desde internet |
 | Base | Supabase `ERP Financiera`, ref `lbxfdouuzfljcubagdod`, región `us-east-1` |
 
 ## 🔴 Las tres trampas ya pagadas
@@ -52,8 +52,14 @@ informó que lo había cambiado, pero al leer el dominio seguía en `null`: otra
 **el mensaje no es el artefacto**. Se arregla a mano en **Settings → Networking**,
 poniendo el puerto **8080** en el dominio.
 
-★ Para no repetirlo: **crear el dominio DESPUÉS del primer deploy exitoso**, así
-Railway detecta el puerto solo.
+★ **CONFIRMADO el 2/9:** poner el puerto a mano **no alcanza**. Se probó con el
+puerto ya en 8080 (leído del dominio, no de la pantalla) y un redeploy completo en
+SUCCESS, y el borde siguió devolviendo 404 en **todas** las rutas. Lo único que lo
+resolvió fue **borrar el dominio y generar uno nuevo** con el servicio ya sano:
+funcionó al primer intento.
+
+★ **La regla, entonces: crear el dominio DESPUÉS del primer deploy exitoso.** Si ya
+quedó mal creado, no se arregla: se borra y se regenera.
 
 ## Servicios
 
@@ -112,5 +118,9 @@ tarde:
    endpoint is unavailable at the moment"*. Se hace en el panel: Database → Backups.
    Y el calendario de respaldos exige plan Enterprise.
 4. **Crear el monitor en UptimeRobot.** `newMonitor` está bloqueado en el plan
-   gratuito. El monitor apunta a `https://api-production-dc98.up.railway.app/health`
+   gratuito: **re-verificado el 2/9**, devuelve `access_denied` incluso con los
+   parámetros mínimos, con y sin contacto de aviso. La cuenta es free (50 monitores,
+   intervalo 5 min). ⚠️ Al crearlo **hay que engancharle el contacto de aviso**
+   (`juani@puentum.com`, id 8659456): un monitor sin destinatario avisa al vacío,
+   que es la cicatriz del watchdog de Eurolab. El monitor apunta a `https://api-production-0792.up.railway.app/health`
    y consulta con `HEAD`, que el endpoint ya soporta.
