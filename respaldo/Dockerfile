@@ -1,0 +1,23 @@
+FROM python:3.12-slim
+
+# postgresql-client 17 desde el repositorio OFICIAL de PostgreSQL, no el de Debian.
+# Motivo medido: pg_dump se NIEGA a volcar un servidor más nuevo que él
+# ("aborting because of server version mismatch"). Debian trae 15/16 y el
+# servidor de Supabase es 17.6, así que la versión del cliente no es un detalle.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends curl ca-certificates gnupg \
+ && install -d /usr/share/postgresql-common/pgdg \
+ && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+      -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+ && echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" \
+      > /etc/apt/sources.list.d/pgdg.list \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends postgresql-client-17 \
+ && apt-get purge -y curl gnupg && apt-get autoremove -y \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . ./
+CMD ["python", "correr.py"]
