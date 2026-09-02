@@ -1,0 +1,7 @@
+# psycopg pinneado a la versión que ya corre en producción en SanluFilm.
+# El resto queda sin pin a propósito hasta el primer build verde: recién ahí
+# se congelan las versiones que Railway resolvió, en vez de inventar números.
+fastapi
+uvicorn[standard]
+psycopg[binary]==3.2.13
+psycopg-pool
