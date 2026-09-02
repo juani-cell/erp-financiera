@@ -40,6 +40,21 @@ Railpack dice que arranca proyectos FastAPI solo, pero **no los detecta si el pu
 de entrada no está en la raíz**. El nuestro es `api/main.py`, así que el comando
 explícito es obligatorio.
 
+**4. El dominio público queda sin puerto si se crea ANTES del primer deploy.**
+Pasó acá el 2/9. El servicio arrancaba bien (uvicorn en `0.0.0.0:8080`, y el
+healthcheck interno de `/health` devolvía 200), pero el dominio público respondía
+`404 Application not found` de Railway. La causa: el dominio tenía
+`targetPort: null`, así que el borde no sabía a dónde mandar el tráfico.
+
+⚠️ **Y no se arregla por API.** `generate-domain` con `targetPort` **no actualiza**
+un dominio que ya existe (devuelve `created: false`). Y el agente de Railway
+informó que lo había cambiado, pero al leer el dominio seguía en `null`: otra vez
+**el mensaje no es el artefacto**. Se arregla a mano en **Settings → Networking**,
+poniendo el puerto **8080** en el dominio.
+
+★ Para no repetirlo: **crear el dominio DESPUÉS del primer deploy exitoso**, así
+Railway detecta el puerto solo.
+
 ## Servicios
 
 ### `api`
@@ -50,7 +65,7 @@ explícito es obligatorio.
 | Healthcheck | `/health`, 60 s |
 | Restart policy | `ON_FAILURE`, 10 intentos |
 | Sleep / serverless | **APAGADO** |
-| Región | **`us-east4` (Virginia) ← HAY QUE PONERLA A MANO** |
+| Región | `us-east4-eqdc4a` (Virginia) ✅ verificado |
 
 🔴 **La región no se puede configurar por API y quedó mal por defecto.** Railway la
 puso en **Amsterdam** (`ams`). La base está en Virginia, así que cada consulta
@@ -77,7 +92,7 @@ colgado, y eso ya se pagó en Eurolab con el servicio de Sigma.
 | Variable | Estado | Valor |
 |---|---|---|
 | `ENTORNO` | ✅ puesta | `produccion`. Sólo `desarrollo` publica la documentación de la API |
-| `DATABASE_URL` | ⏳ falta | Pooler **compartido** de Supabase, modo **sesión**, puerto **5432** |
+| `DATABASE_URL` | ✅ puesta | Pooler **compartido** de Supabase, modo **sesión**, puerto **5432** |
 
 ⚠️ **No usar la conexión directa** (`db.<ref>.supabase.co`): es sólo IPv6, y el
 servicio tiene el egreso IPv6 desactivado, así que no resolvería. **Y no usar el
@@ -88,13 +103,14 @@ La forma es:
 
 ## Lo que se hace a mano, y no es un olvido
 
-Tres cosas no tienen API. Quedan acá para que en la migración nadie las descubra
+Cuatro cosas no tienen API. Quedan acá para que en la migración nadie las descubra
 tarde:
 
-1. **La región del servicio de Railway** (Settings → Regions). Ver arriba.
-2. **Restaurar un respaldo de Supabase.** El endpoint de la API responde *"this
+1. **La región del servicio de Railway** (Settings → Regions). ✅ Hecho el 2/9: `us-east4`.
+2. **El puerto del dominio público** (Settings → Networking → puerto 8080). Ver la trampa 4.
+3. **Restaurar un respaldo de Supabase.** El endpoint de la API responde *"this
    endpoint is unavailable at the moment"*. Se hace en el panel: Database → Backups.
    Y el calendario de respaldos exige plan Enterprise.
-3. **Crear el monitor en UptimeRobot.** `newMonitor` está bloqueado en el plan
+4. **Crear el monitor en UptimeRobot.** `newMonitor` está bloqueado en el plan
    gratuito. El monitor apunta a `https://api-production-dc98.up.railway.app/health`
    y consulta con `HEAD`, que el endpoint ya soporta.
