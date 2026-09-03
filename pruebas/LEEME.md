@@ -54,3 +54,33 @@ sería comparar contra otra cosa.
 **Una pata en cuenta corriente arranca COMPLETADA por defecto.** El caso `cb3` no
 probaba nada al principio porque tenía las dos patas en cuenta corriente. Para probar
 que lo pendiente no impacta, las patas tienen que ser **efectivo**.
+
+## Los dos gates, y por qué hacen falta los dos
+
+```bash
+python3 pruebas/test_calculos.py      # ¿el port da los mismos números?
+python3 pruebas/test_mutaciones.py    # ¿ese gate puede fallar?
+```
+
+El segundo es el que más rinde y el menos obvio. **Un gate en verde no dice nada
+hasta que se lo rompe a propósito y se confirma que se pone rojo por el motivo que
+dice cubrir.** `test_mutaciones.py` cambia una línea del cálculo, corre el gate, y
+exige que salga en rojo. Si alguna mutación deja el gate en verde, es que **ningún
+caso ejercita esa regla**: hay que agregar el caso, no bajar la mutación.
+
+Existe porque esa disciplina, si vive sólo en la cabeza de alguien, no se ejecuta.
+
+### Tres agujeros que encontró, todos reales
+
+| Qué quedaba sin cubrir | Cómo se destapó |
+|---|---|
+| El default «una pata en cta. cte. arranca completada» | Se invirtió el default y el gate siguió en verde: **ningún caso tenía la clave ausente**, todos la tenían en `true` o `false` |
+| La valuación del real y de la libra | Se cambió la división por multiplicación en el cross del real y el gate siguió en verde: **no había saldo en esas monedas** |
+| Que el arnés distinga las dos reglas de imputación | Todos los cables tenían `fecha == fechaEjecucion`, así que el arnés era **ciego al cambio de regla que estábamos por hacer** |
+
+### Una mutación que NO era una rotura
+
+Cambiar `var_tc = 0 si es el primer día` por `reval_anterior - (prev or 0)` deja el
+gate en verde, y está bien: en el primer día no hay posición anterior, así que
+`reval_anterior` vale cero y las dos formas son **equivalentes**. No es un agujero.
+Conviene saber distinguir una cosa de la otra antes de salir a agregar casos.

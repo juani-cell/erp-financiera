@@ -95,23 +95,27 @@
    },
    {
     "fecha": "2026-08-11",
-    "movPesos": -74482000,
+    "movPesos": -80887000,
     "movUsd": 33800,
-    "movPesosTotalDia": -74482000,
+    "movPesosTotalDia": -80887000,
     "movDivDia": {
      "USD": 33800,
      "JPY": 1500000,
      "EUR": 2000,
+     "BRL": 15000,
+     "LBR": 1200,
      "USDT": 1998
     },
     "tc": 1520,
     "congelado": false,
-    "sPesos": -24482000,
+    "sPesos": -30887000,
     "sUsd": 133800,
     "saldos": {
      "USD": 133800,
      "JPY": 1500000,
      "EUR": 2000,
+     "BRL": 15000,
+     "LBR": 1200,
      "USDT": 1998
     },
     "cerrado": false,
@@ -119,17 +123,17 @@
     "ayerSaldos": {
      "USD": 100000
     },
-    "ganOperativa": -6455.1578947368325,
+    "ganOperativa": -6415.582379862673,
     "varTC": -550.0792114064388,
     "gastosHoy": 989.4736842105264,
-    "resultadoTotal": -7994.710790353798,
-    "mesTotal": -7874.710790353798,
-    "mesOperativa": -6335.1578947368325,
+    "resultadoTotal": -7955.135275479639,
+    "mesTotal": -7835.135275479639,
+    "mesOperativa": -6295.582379862673,
     "mesVarTC": -550.0792114064388,
     "mesGastos": 989.4736842105264,
-    "patValuado": 125570.1052631579,
-    "patValuadoVar": -7994.710790353798,
-    "patReal": -7324.631578947359,
+    "patValuado": 125609.68077803205,
+    "patValuadoVar": -7955.135275479639,
+    "patReal": -7285.0560640732,
     "ccUsd": -7091.315789473684,
     "ccPesos": -12390000,
     "ccDiv": {
@@ -139,15 +143,17 @@
      {
       "tipo": "cambio",
       "label": "Cambio de divisas",
-      "movPesos": -36825000,
+      "movPesos": -43230000,
       "movUsd": 15000,
-      "cant": 8,
-      "volUsd": 29304.333333333332,
+      "cant": 10,
+      "volUsd": 33574.33333333333,
       "divs": {
        "USD": 15000,
        "JPY": 1500000,
        "EUR": 2000,
-       "ARS": -36825000
+       "BRL": 15000,
+       "LBR": 1200,
+       "ARS": -43230000
       }
      },
      {
@@ -203,23 +209,27 @@
   },
   "ultimo": {
    "fecha": "2026-08-11",
-   "movPesos": -74482000,
+   "movPesos": -80887000,
    "movUsd": 33800,
-   "movPesosTotalDia": -74482000,
+   "movPesosTotalDia": -80887000,
    "movDivDia": {
     "USD": 33800,
     "JPY": 1500000,
     "EUR": 2000,
+    "BRL": 15000,
+    "LBR": 1200,
     "USDT": 1998
    },
    "tc": 1520,
    "congelado": false,
-   "sPesos": -24482000,
+   "sPesos": -30887000,
    "sUsd": 133800,
    "saldos": {
     "USD": 133800,
     "JPY": 1500000,
     "EUR": 2000,
+    "BRL": 15000,
+    "LBR": 1200,
     "USDT": 1998
    },
    "cerrado": false,
@@ -227,17 +237,17 @@
    "ayerSaldos": {
     "USD": 100000
    },
-   "ganOperativa": -6455.1578947368325,
+   "ganOperativa": -6415.582379862673,
    "varTC": -550.0792114064388,
    "gastosHoy": 989.4736842105264,
-   "resultadoTotal": -7994.710790353798,
-   "mesTotal": -7874.710790353798,
-   "mesOperativa": -6335.1578947368325,
+   "resultadoTotal": -7955.135275479639,
+   "mesTotal": -7835.135275479639,
+   "mesOperativa": -6295.582379862673,
    "mesVarTC": -550.0792114064388,
    "mesGastos": 989.4736842105264,
-   "patValuado": 125570.1052631579,
-   "patValuadoVar": -7994.710790353798,
-   "patReal": -7324.631578947359,
+   "patValuado": 125609.68077803205,
+   "patValuadoVar": -7955.135275479639,
+   "patReal": -7285.0560640732,
    "ccUsd": -7091.315789473684,
    "ccPesos": -12390000,
    "ccDiv": {
@@ -247,15 +257,17 @@
     {
      "tipo": "cambio",
      "label": "Cambio de divisas",
-     "movPesos": -36825000,
+     "movPesos": -43230000,
      "movUsd": 15000,
-     "cant": 8,
-     "volUsd": 29304.333333333332,
+     "cant": 10,
+     "volUsd": 33574.33333333333,
      "divs": {
       "USD": 15000,
       "JPY": 1500000,
       "EUR": 2000,
-      "ARS": -36825000
+      "BRL": 15000,
+      "LBR": 1200,
+      "ARS": -43230000
      }
     },
     {
@@ -858,7 +870,9 @@
     "cierres": "un dia CERRADO con params congelados",
     "cb4": "CASO DISCRIMINANTE de la regla de imputacion. Cargado el 2026-08-10 (que esta CERRADO) y ejecutado el 2026-08-11. Con la regla vigente el movimiento cae el 10; con la regla propuesta (imputar al completado) caeria el 11. Sin este caso el arnes seria CIEGO al cambio de regla.",
     "op8": "pata de PAGO en cuenta corriente con la clave AUSENTE en patasHechas. Ejercita el default 'una pata en cta cte arranca completada'. Sin este caso el gate no detecta si ese default se invierte: lo comprobe rompiendolo y el gate seguia en verde.",
-    "op9": "igual que op8 pero del lado de la pata de DIVISA, para cubrir el otro branch."
+    "op9": "igual que op8 pero del lado de la pata de DIVISA, para cubrir el otro branch.",
+    "op10": "compra de REALES: ejercita la valuacion por crossBrl, que se DIVIDE (no se multiplica). Sin este caso el gate no detectaba invertir esa operacion.",
+    "op11": "compra de LIBRAS: ejercita la valuacion por crossGbp, que se multiplica."
    }
   },
   "clientes": [
@@ -1280,6 +1294,70 @@
     "ok": "pendiente",
     "lugar": "retiro",
     "_patasFijas": true
+   },
+   {
+    "comisionistaId": "",
+    "comision": 0,
+    "comisionMoneda": "USD",
+    "partesPago": [],
+    "partesDivisa": [],
+    "monedaPagoOtra": "",
+    "monedaOtra": "",
+    "cancelado": false,
+    "lugarPago": "retiro",
+    "lugarDivisa": "retiro",
+    "entregaPago": "retiro",
+    "entregaDivisa": "retiro",
+    "formaPago": "efectivo",
+    "formaRetiro": "efectivo",
+    "patasHechas": {
+     "pago": true,
+     "divisa": true
+    },
+    "ok": "Completado",
+    "id": "op10",
+    "numero": 10,
+    "tipo": "compra",
+    "fecha": "2026-08-11",
+    "clienteId": "c1",
+    "monedaPago": "ARS",
+    "moneda": "BRL",
+    "cantidad": 15000,
+    "tc": 275,
+    "lugar": "retiro",
+    "_patasFijas": true
+   },
+   {
+    "comisionistaId": "",
+    "comision": 0,
+    "comisionMoneda": "USD",
+    "partesPago": [],
+    "partesDivisa": [],
+    "monedaPagoOtra": "",
+    "monedaOtra": "",
+    "cancelado": false,
+    "lugarPago": "retiro",
+    "lugarDivisa": "retiro",
+    "entregaPago": "retiro",
+    "entregaDivisa": "retiro",
+    "formaPago": "efectivo",
+    "formaRetiro": "efectivo",
+    "patasHechas": {
+     "pago": true,
+     "divisa": true
+    },
+    "ok": "Completado",
+    "id": "op11",
+    "numero": 11,
+    "tipo": "compra",
+    "fecha": "2026-08-11",
+    "clienteId": "c2",
+    "monedaPago": "ARS",
+    "moneda": "LBR",
+    "cantidad": 1200,
+    "tc": 1900,
+    "lugar": "retiro",
+    "_patasFijas": true
    }
   ],
   "cripto": [
@@ -1617,7 +1695,7 @@
   },
   "usuarios": [
    {
-    "id": "xgaxyw3n",
+    "id": "x56e1lp5",
     "numero": 1,
     "nombre": "Administrador",
     "usuario": "admin",
@@ -1628,7 +1706,7 @@
     "debeCambiarPassword": false
    },
    {
-    "id": "x53rc91q",
+    "id": "xztnfida",
     "numero": 2,
     "nombre": "Operador",
     "usuario": "operador",

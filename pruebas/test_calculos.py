@@ -40,6 +40,21 @@ def igual(a, b) -> bool:
     return a == b
 
 
+def comparar_rec(nombre, esperado, obtenido):
+    """Compara recursivamente dicts, listas y escalares, con tolerancia en floats."""
+    if isinstance(esperado, dict) and isinstance(obtenido, dict):
+        for k in sorted(set(esperado) | set(obtenido)):
+            comparar_rec(f"{nombre}.{k}", esperado.get(k), obtenido.get(k))
+    elif isinstance(esperado, list) and isinstance(obtenido, list):
+        if len(esperado) != len(obtenido):
+            fallas.append(f"{nombre}: largo {len(esperado)} vs {len(obtenido)}")
+            return
+        for i, (e, o) in enumerate(zip(esperado, obtenido)):
+            comparar_rec(f"{nombre}[{i}]", e, o)
+    elif not igual(esperado, obtenido):
+        fallas.append(f"{nombre}: esperado {esperado!r}, obtuve {obtenido!r}")
+
+
 def comparar_dict(nombre, esperado, obtenido):
     for k in sorted(set(esperado) | set(obtenido)):
         e, o = esperado.get(k), obtenido.get(k)
@@ -84,6 +99,17 @@ def main() -> None:
                 if not igual(e.get(k), o.get(k)):
                     fallas.append(f"movimientosCC[{i}] id={e.get('id')!r} .{k}: "
                                   f"esperado {e.get(k)!r}, obtuve {o.get(k)!r}")
+
+    # ── serie: comparación recursiva de cada fila ──
+    esp_serie, obt_serie = ref["serie"], calculos.serie(d)
+    esp_rows, obt_rows = esp_serie.get("rows") or [], obt_serie.get("rows") or []
+    print(f"\n  serie: filas esperadas {len(esp_rows)} · obtenidas {len(obt_rows)}")
+    if len(esp_rows) != len(obt_rows):
+        fallas.append(f"serie.rows: cantidad distinta ({len(esp_rows)} vs {len(obt_rows)})")
+    else:
+        for i, (e, o) in enumerate(zip(esp_rows, obt_rows)):
+            comparar_rec(f"serie.rows[{i}]({e.get('fecha')})", e, o)
+    comparar_dict("serie.cap", esp_serie.get("cap") or {}, obt_serie.get("cap") or {})
 
     print("\n" + "=" * 68)
     if fallas:
