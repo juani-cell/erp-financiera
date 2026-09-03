@@ -1,6 +1,6 @@
 {
  "_casos": {
-  "por_que_existe": "Set derivado del ESPACIO DE CASOS de las reglas del README, no de datos que alguien dejo. Cada registro dice que regla ejercita.",
+  "por_que_existe": "Set derivado del ESPACIO DE CASOS de las reglas del README, no de datos que alguien dejo. Cada registro dice que regla ejercita. Incluye al menos un caso donde las dos reglas candidatas dan resultados distintos: si no, el gate no puede detectar el cambio.",
   "reloj_congelado": "2026-08-12T12:00:00Z",
   "cobertura": {
    "op1": "cambio compra USD/ARS, ambas patas efectivo, COMPLETADA",
@@ -18,7 +18,8 @@
    "cb3": "cable BAJADA con las dos patas en EFECTIVO y sin marcar: NO debe impactar. Ojo: si las patas fueran 'cuenta corriente' SI impactarian, porque una pata en cta cte arranca completada por defecto.",
    "ctacte": "los 4 movimientos manuales: cobrar efectivo, entregar efectivo, ajuste a favor cueva, ajuste a favor cliente",
    "cotiz": "apertura y cierre del mismo dia, mas un cierre posterior con TC distinto para que la variacion por TC no sea cero",
-   "cierres": "un dia CERRADO con params congelados"
+   "cierres": "un dia CERRADO con params congelados",
+   "cb4": "CASO DISCRIMINANTE de la regla de imputacion. Cargado el 2026-08-10 (que esta CERRADO) y ejecutado el 2026-08-11. Con la regla vigente el movimiento cae el 10; con la regla propuesta (imputar al completado) caeria el 11. Sin este caso el arnes seria CIEGO al cambio de regla."
   }
  },
  "clientes": [
@@ -537,6 +538,33 @@
    "estado": "pendiente",
    "cancelado": false,
    "obs": ""
+  },
+  {
+   "id": "cb4",
+   "numero": 4,
+   "fecha": "2026-08-10",
+   "fechaEjecucion": "2026-08-11",
+   "clienteId": "c1",
+   "comisionistaId": "m1",
+   "tipo": "Bajada",
+   "monto": 6000,
+   "costoPct": 1,
+   "margenPct": 2,
+   "formaMayorista": "cuenta corriente",
+   "formaCliente": "cuenta corriente",
+   "partesMayorista": [],
+   "partesCliente": [],
+   "lugarMayorista": "",
+   "lugarCliente": "",
+   "entregaMayorista": "",
+   "entregaCliente": "",
+   "patasHechas": {
+    "mayorista": true,
+    "cliente": true
+   },
+   "estado": "ejecutado",
+   "cancelado": false,
+   "obs": "CASO DISCRIMINANTE: cargado el 10 (dia CERRADO) y ejecutado el 11"
   }
  ],
  "ctacte": [

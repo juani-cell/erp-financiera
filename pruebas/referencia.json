@@ -29,20 +29,22 @@
     "cerrado": true,
     "ayerPesos": 0,
     "ayerSaldos": {},
-    "ganOperativa": 0,
+    "ganOperativa": 120,
     "varTC": 0,
     "gastosHoy": 0,
-    "resultadoTotal": 0,
-    "mesTotal": 0,
-    "mesOperativa": 0,
+    "resultadoTotal": 120,
+    "mesTotal": 120,
+    "mesOperativa": 120,
     "mesVarTC": 0,
     "mesGastos": 0,
-    "patValuado": 133444.8160535117,
-    "patValuadoVar": 133444.8160535117,
-    "patReal": 0,
-    "ccUsd": 0,
+    "patValuado": 133564.8160535117,
+    "patValuadoVar": 133564.8160535117,
+    "patReal": 120,
+    "ccUsd": 120,
     "ccPesos": 0,
-    "ccDiv": {},
+    "ccDiv": {
+     "USD": 120
+    },
     "desglose": [
      {
       "tipo": "cambio",
@@ -76,8 +78,8 @@
       "label": "Cables",
       "movPesos": 0,
       "movUsd": 0,
-      "cant": 0,
-      "volUsd": 0,
+      "cant": 1,
+      "volUsd": 6000,
       "divs": {}
      },
      {
@@ -121,17 +123,17 @@
     "varTC": -550.0792114064388,
     "gastosHoy": 989.4736842105264,
     "resultadoTotal": -8123.316053511691,
-    "mesTotal": -8123.316053511691,
-    "mesOperativa": -6583.763157894726,
+    "mesTotal": -8003.316053511691,
+    "mesOperativa": -6463.763157894726,
     "mesVarTC": -550.0792114064388,
     "mesGastos": 989.4736842105264,
-    "patValuado": 125321.5,
+    "patValuado": 125441.5,
     "patValuadoVar": -8123.316053511691,
-    "patReal": -7573.236842105252,
-    "ccUsd": -3615.921052631579,
+    "patReal": -7453.236842105252,
+    "ccUsd": -3495.921052631579,
     "ccPesos": -6925000,
     "ccDiv": {
-     "USD": 940
+     "USD": 1060
     },
     "desglose": [
      {
@@ -229,17 +231,17 @@
    "varTC": -550.0792114064388,
    "gastosHoy": 989.4736842105264,
    "resultadoTotal": -8123.316053511691,
-   "mesTotal": -8123.316053511691,
-   "mesOperativa": -6583.763157894726,
+   "mesTotal": -8003.316053511691,
+   "mesOperativa": -6463.763157894726,
    "mesVarTC": -550.0792114064388,
    "mesGastos": 989.4736842105264,
-   "patValuado": 125321.5,
+   "patValuado": 125441.5,
    "patValuadoVar": -8123.316053511691,
-   "patReal": -7573.236842105252,
-   "ccUsd": -3615.921052631579,
+   "patReal": -7453.236842105252,
+   "ccUsd": -3495.921052631579,
    "ccPesos": -6925000,
    "ccDiv": {
-    "USD": 940
+    "USD": 1060
    },
    "desglose": [
     {
@@ -302,6 +304,30 @@
   }
  },
  "movimientosCC": [
+  {
+   "id": "cb4·may",
+   "comisionistaId": "m1",
+   "fecha": "2026-08-10",
+   "moneda": "USD",
+   "monto": 5940,
+   "motivo": "Bajada de USD 6.000 recibida",
+   "opId": "cb4",
+   "coll": "cables",
+   "auto": true,
+   "efectivo": false
+  },
+  {
+   "id": "cb4·cli",
+   "clienteId": "c1",
+   "fecha": "2026-08-10",
+   "moneda": "USD",
+   "monto": -5820,
+   "motivo": "Bajada de USD 6.000 acreditada",
+   "opId": "cb4",
+   "coll": "cables",
+   "auto": true,
+   "efectivo": false
+  },
   {
    "id": "op3·p1",
    "clienteId": "c1",
@@ -465,6 +491,18 @@
     "codigo": "CL01",
     "movs": [
      {
+      "id": "cb4·cli",
+      "clienteId": "c1",
+      "fecha": "2026-08-10",
+      "moneda": "USD",
+      "monto": -5820,
+      "motivo": "Bajada de USD 6.000 acreditada",
+      "opId": "cb4",
+      "coll": "cables",
+      "auto": true,
+      "efectivo": false
+     },
+     {
       "id": "op3·p1",
       "clienteId": "c1",
       "fecha": "2026-08-11",
@@ -503,14 +541,14 @@
      }
     ],
     "porMon": {
-     "ARS": -4175000,
-     "USD": 8080
+     "USD": 2260,
+     "ARS": -4175000
     },
     "monedas": [
-     "ARS",
-     "USD"
+     "USD",
+     "ARS"
     ],
-    "usd": 5333.28947368421,
+    "usd": -486.7105263157896,
     "desde": "2026-08-11"
    },
    {
@@ -702,6 +740,18 @@
     "codigo": "CO02",
     "movs": [
      {
+      "id": "cb4·may",
+      "comisionistaId": "m1",
+      "fecha": "2026-08-10",
+      "moneda": "USD",
+      "monto": 5940,
+      "motivo": "Bajada de USD 6.000 recibida",
+      "opId": "cb4",
+      "coll": "cables",
+      "auto": true,
+      "efectivo": false
+     },
+     {
       "id": "cb1·may",
       "comisionistaId": "m1",
       "fecha": "2026-08-11",
@@ -727,19 +777,19 @@
      }
     ],
     "porMon": {
-     "USD": 1980
+     "USD": 7920
     },
     "monedas": [
      "USD"
     ],
-    "usd": 1980,
+    "usd": 7920,
     "desde": "2026-08-11"
    }
   ]
  },
  "datosNormalizados": {
   "_casos": {
-   "por_que_existe": "Set derivado del ESPACIO DE CASOS de las reglas del README, no de datos que alguien dejo. Cada registro dice que regla ejercita.",
+   "por_que_existe": "Set derivado del ESPACIO DE CASOS de las reglas del README, no de datos que alguien dejo. Cada registro dice que regla ejercita. Incluye al menos un caso donde las dos reglas candidatas dan resultados distintos: si no, el gate no puede detectar el cambio.",
    "reloj_congelado": "2026-08-12T12:00:00Z",
    "cobertura": {
     "op1": "cambio compra USD/ARS, ambas patas efectivo, COMPLETADA",
@@ -757,7 +807,8 @@
     "cb3": "cable BAJADA con las dos patas en EFECTIVO y sin marcar: NO debe impactar. Ojo: si las patas fueran 'cuenta corriente' SI impactarian, porque una pata en cta cte arranca completada por defecto.",
     "ctacte": "los 4 movimientos manuales: cobrar efectivo, entregar efectivo, ajuste a favor cueva, ajuste a favor cliente",
     "cotiz": "apertura y cierre del mismo dia, mas un cierre posterior con TC distinto para que la variacion por TC no sea cero",
-    "cierres": "un dia CERRADO con params congelados"
+    "cierres": "un dia CERRADO con params congelados",
+    "cb4": "CASO DISCRIMINANTE de la regla de imputacion. Cargado el 2026-08-10 (que esta CERRADO) y ejecutado el 2026-08-11. Con la regla vigente el movimiento cae el 10; con la regla propuesta (imputar al completado) caeria el 11. Sin este caso el arnes seria CIEGO al cambio de regla."
    }
   },
   "clientes": [
@@ -1298,6 +1349,33 @@
     "estado": "pendiente",
     "cancelado": false,
     "obs": ""
+   },
+   {
+    "id": "cb4",
+    "numero": 4,
+    "fecha": "2026-08-10",
+    "fechaEjecucion": "2026-08-11",
+    "clienteId": "c1",
+    "comisionistaId": "m1",
+    "tipo": "Bajada",
+    "monto": 6000,
+    "costoPct": 1,
+    "margenPct": 2,
+    "formaMayorista": "cuenta corriente",
+    "formaCliente": "cuenta corriente",
+    "partesMayorista": [],
+    "partesCliente": [],
+    "lugarMayorista": "",
+    "lugarCliente": "",
+    "entregaMayorista": "",
+    "entregaCliente": "",
+    "patasHechas": {
+     "mayorista": true,
+     "cliente": true
+    },
+    "estado": "ejecutado",
+    "cancelado": false,
+    "obs": "CASO DISCRIMINANTE: cargado el 10 (dia CERRADO) y ejecutado el 11"
    }
   ],
   "ctacte": [
@@ -1431,7 +1509,7 @@
   },
   "usuarios": [
    {
-    "id": "xk8uzasx",
+    "id": "xscvss7t",
     "numero": 1,
     "nombre": "Administrador",
     "usuario": "admin",
@@ -1442,7 +1520,7 @@
     "debeCambiarPassword": false
    },
    {
-    "id": "xuy51kl9",
+    "id": "xdl157iq",
     "numero": 2,
     "nombre": "Operador",
     "usuario": "operador",
