@@ -23,7 +23,10 @@
    "op8": "pata de PAGO en cuenta corriente con la clave AUSENTE en patasHechas. Ejercita el default 'una pata en cta cte arranca completada'. Sin este caso el gate no detecta si ese default se invierte: lo comprobe rompiendolo y el gate seguia en verde.",
    "op9": "igual que op8 pero del lado de la pata de DIVISA, para cubrir el otro branch.",
    "op10": "compra de REALES: ejercita la valuacion por crossBrl, que se DIVIDE (no se multiplica). Sin este caso el gate no detectaba invertir esa operacion.",
-   "op11": "compra de LIBRAS: ejercita la valuacion por crossGbp, que se multiplica."
+   "op11": "compra de LIBRAS: ejercita la valuacion por crossGbp, que se multiplica.",
+   "mc5_mc6": "dos movimientos OPUESTOS en EUR para el mismo cliente: el saldo netea a cero y por lo tanto esa moneda NO debe aparecer en su lista. Sin esto el gate no detectaba si se quitaba el filtro.",
+   "mc7": "⚠️ RAREZA DEFENSIVA, no un requisito de negocio: un movimiento de un mayorista guardado con clienteId en vez de comisionistaId. El codigo lo tolera y lo suma a la cuenta del comisionista. Esta cubierto para que, si algun dia se decide sacar esa tolerancia, el gate muestre que cambio.",
+   "mc8_mc9_mc10": "COLA FIFO CON PROFUNDIDAD: dos saldos a favor (9 y 10 de agosto) y despues una cancelacion de 1500 que cubre el primero entero y parte del segundo. La antiguedad resultante tiene que ser la del 10, no la del 9. Con una cola de una sola entrada, sacar del frente o del fondo da lo mismo y el gate no distingue. Ademas es el unico caso que ejercita la moneda 'USD cara chica'."
   }
  },
  "clientes": [
@@ -730,6 +733,78 @@
    "monto": -300,
    "tipoMov": "Ajuste a favor del cliente",
    "motivo": "bonificacion",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "id": "mc5",
+   "clienteId": "c1",
+   "fecha": "2026-08-11",
+   "moneda": "EUR",
+   "monto": 700,
+   "tipoMov": "Ajuste a favor de la cueva",
+   "motivo": "neteo A",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "id": "mc6",
+   "clienteId": "c1",
+   "fecha": "2026-08-11",
+   "moneda": "EUR",
+   "monto": -700,
+   "tipoMov": "Ajuste a favor del cliente",
+   "motivo": "neteo B",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "id": "mc7",
+   "clienteId": "m1",
+   "fecha": "2026-08-11",
+   "moneda": "USD",
+   "monto": 450,
+   "tipoMov": "Ajuste a favor de la cueva",
+   "motivo": "id de mayorista en clienteId",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "id": "mc8",
+   "clienteId": "c3",
+   "fecha": "2026-08-09",
+   "moneda": "USD cara chica",
+   "monto": 1000,
+   "tipoMov": "Ajuste a favor de la cueva",
+   "motivo": "FIFO 1 (la mas vieja)",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "id": "mc9",
+   "clienteId": "c3",
+   "fecha": "2026-08-10",
+   "moneda": "USD cara chica",
+   "monto": 1000,
+   "tipoMov": "Ajuste a favor de la cueva",
+   "motivo": "FIFO 2",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "id": "mc10",
+   "clienteId": "c3",
+   "fecha": "2026-08-11",
+   "moneda": "USD cara chica",
+   "monto": -1500,
+   "tipoMov": "Ajuste a favor del cliente",
+   "motivo": "FIFO 3: cancela la 1 entera y parte de la 2",
    "efectivo": false,
    "lugar": "",
    "entrega": ""

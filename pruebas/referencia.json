@@ -12,6 +12,84 @@
  "serie": {
   "rows": [
    {
+    "fecha": "2026-08-09",
+    "movPesos": 0,
+    "movUsd": 0,
+    "movPesosTotalDia": 0,
+    "movDivDia": {},
+    "tc": 1495,
+    "congelado": false,
+    "sPesos": 0,
+    "sUsd": 0,
+    "saldos": {},
+    "cerrado": false,
+    "ayerPesos": 0,
+    "ayerSaldos": {},
+    "ganOperativa": 1000,
+    "varTC": 0,
+    "gastosHoy": 0,
+    "resultadoTotal": 1000,
+    "mesTotal": 1000,
+    "mesOperativa": 1000,
+    "mesVarTC": 0,
+    "mesGastos": 0,
+    "patValuado": 1000,
+    "patValuadoVar": 1000,
+    "patReal": 1000,
+    "ccUsd": 1000,
+    "ccPesos": 0,
+    "ccDiv": {
+     "USD cara chica": 1000
+    },
+    "desglose": [
+     {
+      "tipo": "cambio",
+      "label": "Cambio de divisas",
+      "movPesos": 0,
+      "movUsd": 0,
+      "cant": 0,
+      "volUsd": 0,
+      "divs": {}
+     },
+     {
+      "tipo": "cripto",
+      "label": "Cripto (USDT)",
+      "movPesos": 0,
+      "movUsd": 0,
+      "cant": 0,
+      "volUsd": 0,
+      "divs": {}
+     },
+     {
+      "tipo": "mayorista",
+      "label": "Tesorería",
+      "movPesos": 0,
+      "movUsd": 0,
+      "cant": 0,
+      "volUsd": 0,
+      "divs": {}
+     },
+     {
+      "tipo": "cable",
+      "label": "Cables",
+      "movPesos": 0,
+      "movUsd": 0,
+      "cant": 0,
+      "volUsd": 0,
+      "divs": {}
+     },
+     {
+      "tipo": "ctacte",
+      "label": "Movimientos de caja (cta. cte.)",
+      "movPesos": 0,
+      "movUsd": 0,
+      "cant": 0,
+      "volUsd": 0,
+      "divs": {}
+     }
+    ]
+   },
+   {
     "fecha": "2026-08-10",
     "movPesos": 0,
     "movUsd": 0,
@@ -29,20 +107,21 @@
     "cerrado": true,
     "ayerPesos": 0,
     "ayerSaldos": {},
-    "ganOperativa": 120,
+    "ganOperativa": 1120,
     "varTC": 0,
     "gastosHoy": 0,
-    "resultadoTotal": 120,
-    "mesTotal": 120,
-    "mesOperativa": 120,
+    "resultadoTotal": 1120,
+    "mesTotal": 2120,
+    "mesOperativa": 2120,
     "mesVarTC": 0,
     "mesGastos": 0,
-    "patValuado": 133564.8160535117,
-    "patValuadoVar": 133564.8160535117,
-    "patReal": 120,
-    "ccUsd": 120,
+    "patValuado": 135564.8160535117,
+    "patValuadoVar": 134564.8160535117,
+    "patReal": 2120,
+    "ccUsd": 2120,
     "ccPesos": 0,
     "ccDiv": {
+     "USD cara chica": 2000,
      "USD": 120
     },
     "desglose": [
@@ -123,21 +202,23 @@
     "ayerSaldos": {
      "USD": 100000
     },
-    "ganOperativa": -6415.582379862673,
+    "ganOperativa": -7465.582379862673,
     "varTC": -550.0792114064388,
     "gastosHoy": 989.4736842105264,
-    "resultadoTotal": -7955.135275479639,
-    "mesTotal": -7835.135275479639,
-    "mesOperativa": -6295.582379862673,
+    "resultadoTotal": -9005.135275479639,
+    "mesTotal": -6885.135275479639,
+    "mesOperativa": -5345.582379862673,
     "mesVarTC": -550.0792114064388,
     "mesGastos": 989.4736842105264,
-    "patValuado": 125609.68077803205,
-    "patValuadoVar": -7955.135275479639,
-    "patReal": -7285.0560640732,
-    "ccUsd": -7091.315789473684,
+    "patValuado": 126559.68077803205,
+    "patValuadoVar": -9005.135275479639,
+    "patReal": -6335.0560640732,
+    "ccUsd": -6141.315789473684,
     "ccPesos": -12390000,
     "ccDiv": {
-     "USD": 1060
+     "USD cara chica": 500,
+     "USD": 1510,
+     "EUR": 0
     },
     "desglose": [
      {
@@ -237,21 +318,23 @@
    "ayerSaldos": {
     "USD": 100000
    },
-   "ganOperativa": -6415.582379862673,
+   "ganOperativa": -7465.582379862673,
    "varTC": -550.0792114064388,
    "gastosHoy": 989.4736842105264,
-   "resultadoTotal": -7955.135275479639,
-   "mesTotal": -7835.135275479639,
-   "mesOperativa": -6295.582379862673,
+   "resultadoTotal": -9005.135275479639,
+   "mesTotal": -6885.135275479639,
+   "mesOperativa": -5345.582379862673,
    "mesVarTC": -550.0792114064388,
    "mesGastos": 989.4736842105264,
-   "patValuado": 125609.68077803205,
-   "patValuadoVar": -7955.135275479639,
-   "patReal": -7285.0560640732,
-   "ccUsd": -7091.315789473684,
+   "patValuado": 126559.68077803205,
+   "patValuadoVar": -9005.135275479639,
+   "patReal": -6335.0560640732,
+   "ccUsd": -6141.315789473684,
    "ccPesos": -12390000,
    "ccDiv": {
-    "USD": 1060
+    "USD cara chica": 500,
+    "USD": 1510,
+    "EUR": 0
    },
    "desglose": [
     {
@@ -317,6 +400,19 @@
  },
  "movimientosCC": [
   {
+   "auto": false,
+   "id": "mc8",
+   "clienteId": "c3",
+   "fecha": "2026-08-09",
+   "moneda": "USD cara chica",
+   "monto": 1000,
+   "tipoMov": "Ajuste a favor de la cueva",
+   "motivo": "FIFO 1 (la mas vieja)",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
    "id": "cb4·may",
    "comisionistaId": "m1",
    "fecha": "2026-08-10",
@@ -339,6 +435,19 @@
    "coll": "cables",
    "auto": true,
    "efectivo": false
+  },
+  {
+   "auto": false,
+   "id": "mc9",
+   "clienteId": "c3",
+   "fecha": "2026-08-10",
+   "moneda": "USD cara chica",
+   "monto": 1000,
+   "tipoMov": "Ajuste a favor de la cueva",
+   "motivo": "FIFO 2",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
   },
   {
    "id": "op3·p1",
@@ -499,6 +608,58 @@
    "efectivo": false,
    "lugar": "",
    "entrega": ""
+  },
+  {
+   "auto": false,
+   "id": "mc5",
+   "clienteId": "c1",
+   "fecha": "2026-08-11",
+   "moneda": "EUR",
+   "monto": 700,
+   "tipoMov": "Ajuste a favor de la cueva",
+   "motivo": "neteo A",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "auto": false,
+   "id": "mc6",
+   "clienteId": "c1",
+   "fecha": "2026-08-11",
+   "moneda": "EUR",
+   "monto": -700,
+   "tipoMov": "Ajuste a favor del cliente",
+   "motivo": "neteo B",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "auto": false,
+   "id": "mc7",
+   "clienteId": "m1",
+   "fecha": "2026-08-11",
+   "moneda": "USD",
+   "monto": 450,
+   "tipoMov": "Ajuste a favor de la cueva",
+   "motivo": "id de mayorista en clienteId",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "auto": false,
+   "id": "mc10",
+   "clienteId": "c3",
+   "fecha": "2026-08-11",
+   "moneda": "USD cara chica",
+   "monto": -1500,
+   "tipoMov": "Ajuste a favor del cliente",
+   "motivo": "FIFO 3: cancela la 1 entera y parte de la 2",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
   }
  ],
  "cuentas": {
@@ -574,11 +735,38 @@
       "efectivo": true,
       "lugar": "retiro",
       "entrega": "retiro"
+     },
+     {
+      "auto": false,
+      "id": "mc5",
+      "clienteId": "c1",
+      "fecha": "2026-08-11",
+      "moneda": "EUR",
+      "monto": 700,
+      "tipoMov": "Ajuste a favor de la cueva",
+      "motivo": "neteo A",
+      "efectivo": false,
+      "lugar": "",
+      "entrega": ""
+     },
+     {
+      "auto": false,
+      "id": "mc6",
+      "clienteId": "c1",
+      "fecha": "2026-08-11",
+      "moneda": "EUR",
+      "monto": -700,
+      "tipoMov": "Ajuste a favor del cliente",
+      "motivo": "neteo B",
+      "efectivo": false,
+      "lugar": "",
+      "entrega": ""
      }
     ],
     "porMon": {
      "USD": 2260,
-     "ARS": -4175000
+     "ARS": -4175000,
+     "EUR": 0
     },
     "monedas": [
      "USD",
@@ -680,6 +868,32 @@
     "codigo": "CL03",
     "movs": [
      {
+      "auto": false,
+      "id": "mc8",
+      "clienteId": "c3",
+      "fecha": "2026-08-09",
+      "moneda": "USD cara chica",
+      "monto": 1000,
+      "tipoMov": "Ajuste a favor de la cueva",
+      "motivo": "FIFO 1 (la mas vieja)",
+      "efectivo": false,
+      "lugar": "",
+      "entrega": ""
+     },
+     {
+      "auto": false,
+      "id": "mc9",
+      "clienteId": "c3",
+      "fecha": "2026-08-10",
+      "moneda": "USD cara chica",
+      "monto": 1000,
+      "tipoMov": "Ajuste a favor de la cueva",
+      "motivo": "FIFO 2",
+      "efectivo": false,
+      "lugar": "",
+      "entrega": ""
+     },
+     {
       "id": "op8·p",
       "clienteId": "c3",
       "fecha": "2026-08-11",
@@ -728,18 +942,33 @@
       "efectivo": false,
       "lugar": "",
       "entrega": ""
+     },
+     {
+      "auto": false,
+      "id": "mc10",
+      "clienteId": "c3",
+      "fecha": "2026-08-11",
+      "moneda": "USD cara chica",
+      "monto": -1500,
+      "tipoMov": "Ajuste a favor del cliente",
+      "motivo": "FIFO 3: cancela la 1 entera y parte de la 2",
+      "efectivo": false,
+      "lugar": "",
+      "entrega": ""
      }
     ],
     "porMon": {
+     "USD cara chica": 500,
      "ARS": -5215000,
      "USD": -300
     },
     "monedas": [
+     "USD cara chica",
      "ARS",
      "USD"
     ],
-    "usd": -3730.9210526315787,
-    "desde": "2026-08-11"
+    "usd": -3230.9210526315787,
+    "desde": "2026-08-10"
    },
    {
     "cliente": {
@@ -834,15 +1063,28 @@
       "coll": "cables",
       "auto": true,
       "efectivo": false
+     },
+     {
+      "auto": false,
+      "id": "mc7",
+      "clienteId": "m1",
+      "fecha": "2026-08-11",
+      "moneda": "USD",
+      "monto": 450,
+      "tipoMov": "Ajuste a favor de la cueva",
+      "motivo": "id de mayorista en clienteId",
+      "efectivo": false,
+      "lugar": "",
+      "entrega": ""
      }
     ],
     "porMon": {
-     "USD": 7920
+     "USD": 8370
     },
     "monedas": [
      "USD"
     ],
-    "usd": 7920,
+    "usd": 8370,
     "desde": "2026-08-11"
    }
   ]
@@ -872,7 +1114,10 @@
     "op8": "pata de PAGO en cuenta corriente con la clave AUSENTE en patasHechas. Ejercita el default 'una pata en cta cte arranca completada'. Sin este caso el gate no detecta si ese default se invierte: lo comprobe rompiendolo y el gate seguia en verde.",
     "op9": "igual que op8 pero del lado de la pata de DIVISA, para cubrir el otro branch.",
     "op10": "compra de REALES: ejercita la valuacion por crossBrl, que se DIVIDE (no se multiplica). Sin este caso el gate no detectaba invertir esa operacion.",
-    "op11": "compra de LIBRAS: ejercita la valuacion por crossGbp, que se multiplica."
+    "op11": "compra de LIBRAS: ejercita la valuacion por crossGbp, que se multiplica.",
+    "mc5_mc6": "dos movimientos OPUESTOS en EUR para el mismo cliente: el saldo netea a cero y por lo tanto esa moneda NO debe aparecer en su lista. Sin esto el gate no detectaba si se quitaba el filtro.",
+    "mc7": "⚠️ RAREZA DEFENSIVA, no un requisito de negocio: un movimiento de un mayorista guardado con clienteId en vez de comisionistaId. El codigo lo tolera y lo suma a la cuenta del comisionista. Esta cubierto para que, si algun dia se decide sacar esa tolerancia, el gate muestre que cambio.",
+    "mc8_mc9_mc10": "COLA FIFO CON PROFUNDIDAD: dos saldos a favor (9 y 10 de agosto) y despues una cancelacion de 1500 que cubre el primero entero y parte del segundo. La antiguedad resultante tiene que ser la del 10, no la del 9. Con una cola de una sola entrada, sacar del frente o del fondo da lo mismo y el gate no distingue. Ademas es el unico caso que ejercita la moneda 'USD cara chica'."
    }
   },
   "clientes": [
@@ -1612,6 +1857,78 @@
     "efectivo": false,
     "lugar": "",
     "entrega": ""
+   },
+   {
+    "id": "mc5",
+    "clienteId": "c1",
+    "fecha": "2026-08-11",
+    "moneda": "EUR",
+    "monto": 700,
+    "tipoMov": "Ajuste a favor de la cueva",
+    "motivo": "neteo A",
+    "efectivo": false,
+    "lugar": "",
+    "entrega": ""
+   },
+   {
+    "id": "mc6",
+    "clienteId": "c1",
+    "fecha": "2026-08-11",
+    "moneda": "EUR",
+    "monto": -700,
+    "tipoMov": "Ajuste a favor del cliente",
+    "motivo": "neteo B",
+    "efectivo": false,
+    "lugar": "",
+    "entrega": ""
+   },
+   {
+    "id": "mc7",
+    "clienteId": "m1",
+    "fecha": "2026-08-11",
+    "moneda": "USD",
+    "monto": 450,
+    "tipoMov": "Ajuste a favor de la cueva",
+    "motivo": "id de mayorista en clienteId",
+    "efectivo": false,
+    "lugar": "",
+    "entrega": ""
+   },
+   {
+    "id": "mc8",
+    "clienteId": "c3",
+    "fecha": "2026-08-09",
+    "moneda": "USD cara chica",
+    "monto": 1000,
+    "tipoMov": "Ajuste a favor de la cueva",
+    "motivo": "FIFO 1 (la mas vieja)",
+    "efectivo": false,
+    "lugar": "",
+    "entrega": ""
+   },
+   {
+    "id": "mc9",
+    "clienteId": "c3",
+    "fecha": "2026-08-10",
+    "moneda": "USD cara chica",
+    "monto": 1000,
+    "tipoMov": "Ajuste a favor de la cueva",
+    "motivo": "FIFO 2",
+    "efectivo": false,
+    "lugar": "",
+    "entrega": ""
+   },
+   {
+    "id": "mc10",
+    "clienteId": "c3",
+    "fecha": "2026-08-11",
+    "moneda": "USD cara chica",
+    "monto": -1500,
+    "tipoMov": "Ajuste a favor del cliente",
+    "motivo": "FIFO 3: cancela la 1 entera y parte de la 2",
+    "efectivo": false,
+    "lugar": "",
+    "entrega": ""
    }
   ],
   "gastos": [
@@ -1695,7 +2012,7 @@
   },
   "usuarios": [
    {
-    "id": "x56e1lp5",
+    "id": "x4vbodgj",
     "numero": 1,
     "nombre": "Administrador",
     "usuario": "admin",
@@ -1706,7 +2023,7 @@
     "debeCambiarPassword": false
    },
    {
-    "id": "xztnfida",
+    "id": "xohd9k6j",
     "numero": 2,
     "nombre": "Operador",
     "usuario": "operador",

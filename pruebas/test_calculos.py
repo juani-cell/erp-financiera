@@ -111,6 +111,20 @@ def main() -> None:
             comparar_rec(f"serie.rows[{i}]({e.get('fecha')})", e, o)
     comparar_dict("serie.cap", esp_serie.get("cap") or {}, obt_serie.get("cap") or {})
 
+    # ── cuentas: saldos por titular, por moneda, con antigüedad ──
+    esp_ctas = ref["cuentas"]
+    tc_usado = esp_ctas["_tcUsado"]
+    obt_ctas = calculos.cuentas(d, tc_usado)
+    esp_lista = esp_ctas["saldos"]
+    print(f"\n  cuentas: titulares esperados {len(esp_lista)} · obtenidos {len(obt_ctas)} (TC {tc_usado})")
+    if len(esp_lista) != len(obt_ctas):
+        fallas.append(f"cuentas: cantidad distinta ({len(esp_lista)} vs {len(obt_ctas)})")
+    else:
+        for e, o in zip(esp_lista, obt_ctas):
+            nom = f"cuentas[{e.get('codigo')}]"
+            for k in ("codigo", "tipo", "usd", "desde", "porMon", "monedas"):
+                comparar_rec(f"{nom}.{k}", e.get(k), o.get(k))
+
     print("\n" + "=" * 68)
     if fallas:
         print(f"🔴 GATE EN ROJO: {len(fallas)} diferencia(s)\n")

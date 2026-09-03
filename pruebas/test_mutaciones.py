@@ -65,6 +65,28 @@ MUTACIONES = [
     ("los cobros de efectivo mueven la caja AL REVÉS del saldo",
      'amt = -num(m.get("monto"))',
      'amt = num(m.get("monto"))'),
+    # ── cuentas() ──
+    ("las monedas que netean a cero no se muestran",
+     "monedas = [k for k in por_mon if abs(por_mon[k]) > 0.005]",
+     "monedas = list(por_mon)"),
+    ("el saldo en ARS se DIVIDE por el TC al valuarlo",
+     "return v / tc if tc else 0.0",
+     "return v * tc if tc else 0.0"),
+    ("la antigüedad toma la deuda MÁS VIEJA de todas las monedas",
+     "if fx and (vieja is None or fx < vieja):",
+     "if fx and (vieja is None or fx > vieja):"),
+    ("el FIFO cancela contra el frente de la cola",
+     "cola.pop(0)",
+     "cola.pop()"),
+    ("el FIFO sólo cancela entre signos opuestos",
+     'while v and cola and (cola[0]["v"] > 0) != (v > 0):',
+     'while v and cola and (cola[0]["v"] > 0) == (v > 0):'),
+    ("un comisionista junta también los movs con su id como clienteId",
+     'or m.get("clienteId") == c.get("id")]',
+     ']'),
+    ("una moneda desconocida vale su NOMINAL en cuenta corriente",
+     "    if mon == \"LBR\":\n        return v * (num(p.get(\"crossGbpC\")) or 1)\n    return v",
+     "    if mon == \"LBR\":\n        return v * (num(p.get(\"crossGbpC\")) or 1)\n    return 0.0"),
 ]
 
 

@@ -687,3 +687,97 @@ def serie(d: dict) -> dict:
         })
 
     return {"rows": rows, "cap": cap, "ultimo": rows[-1] if rows else None}
+
+
+# ── cuentas corrientes por titular ───────────────────────────────────────────
+
+def codigo_cliente(numero) -> str:
+    return "CL" + str(int(num(numero))).zfill(2)
+
+
+def codigo_comisionista(numero) -> str:
+    return "CO" + str(int(num(numero))).zfill(2)
+
+
+def cc_usd(d: dict, mon: str, v: float, tc: float) -> float:
+    """Valúa en USD un saldo de cuenta corriente.
+
+    🔴 FIEL, y es una INCONSISTENCIA del prototipo que conviene tener a la vista:
+    para una moneda que no reconoce, esta función devuelve el **valor nominal**
+    (`return v`), mientras `_valuar`, que hace lo mismo para la caja, la hace
+    valer **cero**. O sea que un saldo en una moneda 'Otra' vale su nominal como
+    crédito y cero como caja. Se porta igual porque el port es fiel, pero es una
+    de las cosas a resolver después del verde.
+    """
+    p = d.get("params") or {}
+    if mon == "ARS":
+        return v / tc if tc else 0.0
+    if mon == "EUR":
+        return v * (num(p.get("crossEurC")) or 1)
+    if mon == "BRL":
+        return v / (num(p.get("crossBrlC")) or 5.5)
+    if mon == "LBR":
+        return v * (num(p.get("crossGbpC")) or 1)
+    return v
+
+
+def antiguedad(movs: list[dict]) -> str | None:
+    """FIFO: la fecha del saldo más viejo que todavía no fue cubierto.
+
+    Los movimientos en sentido contrario van cancelando los más antiguos, como
+    una cola. Lo que queda al frente es la deuda más vieja que sigue viva, y su
+    fecha es la antigüedad que se le muestra al operador para reclamar.
+    """
+    cola: list[dict] = []
+    for m in movs:
+        v = num(m.get("monto"))
+        while v and cola and (cola[0]["v"] > 0) != (v > 0):
+            take = min(abs(v), abs(cola[0]["v"])) * (1 if v > 0 else -1)
+            cola[0]["v"] += take
+            v -= take
+            if abs(cola[0]["v"]) < 0.005:
+                cola.pop(0)
+        if abs(v) > 0.005:
+            cola.append({"v": v, "fecha": m.get("fecha")})
+    return cola[0]["fecha"] if cola else None
+
+
+def cuentas(d: dict, tc: float) -> list[dict]:
+    """Saldo de cuenta corriente por titular, por moneda, con su antigüedad.
+
+    Los saldos se llevan **por moneda, sin netear ni convertir entre monedas**:
+    la vista muestra cada moneda en su columna y nunca un total mezclado. El
+    campo `usd` existe sólo para poder ordenar, no para mostrarse como saldo.
+
+    Convención de signo: positivo = el cliente nos debe.
+    """
+    movs = movimientos_cc(d)
+
+    def build(titular: dict, tipo: str, mc: list[dict]) -> dict:
+        por_mon: dict[str, float] = {}
+        for m in mc:
+            k = m.get("moneda")
+            por_mon[k] = por_mon.get(k, 0.0) + num(m.get("monto"))
+        # Sólo las monedas con saldo real: lo que netea a cero no se muestra.
+        monedas = [k for k in por_mon if abs(por_mon[k]) > 0.005]
+        usd_total = sum(cc_usd(d, k, por_mon[k], tc) for k in monedas)
+        vieja = None
+        for k in monedas:
+            fx = antiguedad([m for m in mc if m.get("moneda") == k])
+            if fx and (vieja is None or fx < vieja):
+                vieja = fx
+        codigo = (codigo_comisionista(titular.get("numero")) if tipo == "comisionista"
+                  else codigo_cliente(titular.get("numero")))
+        return {"cliente": titular, "tipo": tipo, "codigo": codigo, "movs": mc,
+                "porMon": por_mon, "monedas": monedas, "usd": usd_total, "desde": vieja}
+
+    out = [build(c, "cliente", [m for m in movs if m.get("clienteId") == c.get("id")])
+           for c in (d.get("clientes") or [])]
+    # FIEL: un comisionista junta también los movimientos cuyo `clienteId` coincide
+    # con su id. Si un id se repitiera entre clientes y comisionistas, se contaría
+    # dos veces. Hoy no pasa porque los prefijos difieren.
+    out += [build(c, "comisionista",
+                  [m for m in movs if m.get("comisionistaId") == c.get("id")
+                   or m.get("clienteId") == c.get("id")])
+            for c in (d.get("comisionistas") or [])]
+    return out
