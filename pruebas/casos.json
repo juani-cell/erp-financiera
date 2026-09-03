@@ -1,0 +1,674 @@
+{
+ "_casos": {
+  "por_que_existe": "Set derivado del ESPACIO DE CASOS de las reglas del README, no de datos que alguien dejo. Cada registro dice que regla ejercita.",
+  "reloj_congelado": "2026-08-12T12:00:00Z",
+  "cobertura": {
+   "op1": "cambio compra USD/ARS, ambas patas efectivo, COMPLETADA",
+   "op2": "venta cargada con el par INVERTIDO a proposito: migrar() la normaliza a la orientacion canonica (tc = monedaPago por unidad de moneda) y da vuelta las patas. Tras normalizar, la pata de cta cte queda marcada en false explicitamente, asi que NO impacta. Prueba que una pata marcada pendiente no mueve la cuenta corriente.",
+   "op3": "PARTES divididas en la pata de pesos, una marcada y otra no",
+   "op4": "CANCELADA: no debe impactar caja, cta cte, ganancia ni volumen",
+   "op5": "COMISION A OPERADOR: genera asiento negativo en la cta cte del comisionista",
+   "op6": "moneda OTRA (JPY): la caja de esa divisa tiene que aparecer",
+   "op7": "EUR contra ARS: ejercita el cross EUR/USD",
+   "cr1": "cripto USDT/ARS con costo de red a cargo de la CUEVA",
+   "cr2": "cripto USDT/USD con costo de red a cargo del CLIENTE",
+   "my1": "TESORERIA contra mayorista (comisionistaId, sin cliente ni comision)",
+   "cb1": "cable BAJADA con costoPct POSITIVO (el mayorista cobra: se traslada al cliente)",
+   "cb2": "cable SUBIDA con costoPct NEGATIVO (el mayorista paga: hoy NO se comparte, es el punto abierto)",
+   "cb3": "cable BAJADA con las dos patas en EFECTIVO y sin marcar: NO debe impactar. Ojo: si las patas fueran 'cuenta corriente' SI impactarian, porque una pata en cta cte arranca completada por defecto.",
+   "ctacte": "los 4 movimientos manuales: cobrar efectivo, entregar efectivo, ajuste a favor cueva, ajuste a favor cliente",
+   "cotiz": "apertura y cierre del mismo dia, mas un cierre posterior con TC distinto para que la variacion por TC no sea cero",
+   "cierres": "un dia CERRADO con params congelados"
+  }
+ },
+ "clientes": [
+  {
+   "id": "c1",
+   "numero": 1,
+   "nombre": "Rossi, Andres",
+   "contacto": "rossi@test.ar",
+   "alta": "2026-01-15",
+   "obs": "",
+   "direcciones": [
+    {
+     "alias": "Casa",
+     "calle": "Av. Siempreviva 742",
+     "piso": "3 B",
+     "obs": "",
+     "geo": null
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "numero": 2,
+   "nombre": "Distribuidora Sur",
+   "contacto": "admin@distsur.ar",
+   "alta": "2026-02-01",
+   "obs": "Cables mensuales",
+   "direcciones": [
+    {
+     "alias": "Deposito",
+     "calle": "Av. Mitre 1200",
+     "piso": "",
+     "obs": "",
+     "geo": null
+    },
+    {
+     "alias": "Oficina",
+     "calle": "Corrientes 500",
+     "piso": "10",
+     "obs": "",
+     "geo": null
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "numero": 3,
+   "nombre": "Kang, M.",
+   "contacto": "",
+   "alta": "2026-03-10",
+   "obs": "solo cta cte",
+   "direcciones": []
+  }
+ ],
+ "comisionistas": [
+  {
+   "id": "o1",
+   "numero": 1,
+   "nombre": "Operador Interno",
+   "tipo": "Comisionista",
+   "comisionPct": 1,
+   "contacto": "",
+   "obs": "",
+   "direcciones": []
+  },
+  {
+   "id": "m1",
+   "numero": 2,
+   "nombre": "Mayorista Norte",
+   "tipo": "Mayorista",
+   "comisionPct": 0,
+   "contacto": "",
+   "obs": "",
+   "direcciones": [
+    {
+     "alias": "Oficina",
+     "calle": "San Martin 100",
+     "piso": "",
+     "obs": "",
+     "geo": null
+    }
+   ]
+  }
+ ],
+ "cotiz": [
+  {
+   "id": "q1",
+   "fecha": "2026-08-10",
+   "momento": "apertura",
+   "dc": 1470,
+   "dv": 1490,
+   "ec": 1.09,
+   "ev": 1.11,
+   "rc": 5.52,
+   "rv": 5.32,
+   "lc": 1.28,
+   "lv": 1.31
+  },
+  {
+   "id": "q2",
+   "fecha": "2026-08-10",
+   "momento": "cierre",
+   "dc": 1475,
+   "dv": 1495,
+   "ec": 1.09,
+   "ev": 1.11,
+   "rc": 5.52,
+   "rv": 5.32,
+   "lc": 1.28,
+   "lv": 1.31
+  },
+  {
+   "id": "q3",
+   "fecha": "2026-08-11",
+   "momento": "cierre",
+   "dc": 1500,
+   "dv": 1520,
+   "ec": 1.1,
+   "ev": 1.12,
+   "rc": 5.6,
+   "rv": 5.4,
+   "lc": 1.29,
+   "lv": 1.32
+  }
+ ],
+ "ops": [
+  {
+   "id": "op1",
+   "numero": 1,
+   "tipo": "compra",
+   "fecha": "2026-08-11",
+   "clienteId": "c1",
+   "monedaPago": "ARS",
+   "monedaPagoOtra": "",
+   "moneda": "USD",
+   "monedaOtra": "",
+   "cantidad": 10000,
+   "tc": 1465,
+   "comisionistaId": "",
+   "comision": 0,
+   "comisionMoneda": "USD",
+   "formaPago": "efectivo",
+   "formaRetiro": "efectivo",
+   "partesPago": [],
+   "partesDivisa": [],
+   "lugarPago": "retiro",
+   "lugarDivisa": "retiro",
+   "entregaPago": "retiro",
+   "entregaDivisa": "retiro",
+   "patasHechas": {
+    "pago": true,
+    "divisa": true
+   },
+   "ok": "Completado",
+   "cancelado": false
+  },
+  {
+   "id": "op2",
+   "numero": 2,
+   "tipo": "venta",
+   "fecha": "2026-08-11",
+   "clienteId": "c2",
+   "monedaPago": "USD",
+   "monedaPagoOtra": "",
+   "moneda": "ARS",
+   "monedaOtra": "",
+   "cantidad": 7500000,
+   "tc": 0.000666,
+   "comisionistaId": "",
+   "comision": 0,
+   "comisionMoneda": "USD",
+   "formaPago": "efectivo",
+   "formaRetiro": "cuenta corriente",
+   "partesPago": [],
+   "partesDivisa": [],
+   "lugarPago": "domicilio",
+   "lugarDivisa": "",
+   "entregaPago": "Av. Mitre 1200",
+   "entregaDivisa": "",
+   "patasHechas": {
+    "pago": false
+   },
+   "ok": "pendiente",
+   "cancelado": false
+  },
+  {
+   "id": "op3",
+   "numero": 3,
+   "tipo": "compra",
+   "fecha": "2026-08-11",
+   "clienteId": "c1",
+   "monedaPago": "ARS",
+   "monedaPagoOtra": "",
+   "moneda": "USD",
+   "monedaOtra": "",
+   "cantidad": 5000,
+   "tc": 1470,
+   "comisionistaId": "",
+   "comision": 0,
+   "comisionMoneda": "USD",
+   "formaPago": "efectivo",
+   "formaRetiro": "efectivo",
+   "partesPago": [
+    {
+     "monto": 3675000,
+     "forma": "efectivo",
+     "lugar": "retiro",
+     "entrega": "retiro"
+    },
+    {
+     "monto": 3675000,
+     "forma": "cuenta corriente",
+     "lugar": "",
+     "entrega": ""
+    }
+   ],
+   "partesDivisa": [],
+   "lugarPago": "",
+   "lugarDivisa": "retiro",
+   "entregaPago": "",
+   "entregaDivisa": "retiro",
+   "patasHechas": {
+    "pago-0": true,
+    "pago-1": true,
+    "divisa": true
+   },
+   "ok": "Completado",
+   "cancelado": false
+  },
+  {
+   "id": "op4",
+   "numero": 4,
+   "tipo": "compra",
+   "fecha": "2026-08-11",
+   "clienteId": "c3",
+   "monedaPago": "ARS",
+   "monedaPagoOtra": "",
+   "moneda": "USD",
+   "monedaOtra": "",
+   "cantidad": 99999,
+   "tc": 1400,
+   "comisionistaId": "",
+   "comision": 0,
+   "comisionMoneda": "USD",
+   "formaPago": "efectivo",
+   "formaRetiro": "efectivo",
+   "partesPago": [],
+   "partesDivisa": [],
+   "lugarPago": "retiro",
+   "lugarDivisa": "retiro",
+   "entregaPago": "retiro",
+   "entregaDivisa": "retiro",
+   "patasHechas": {
+    "pago": true,
+    "divisa": true
+   },
+   "ok": "cancelado",
+   "cancelado": true
+  },
+  {
+   "id": "op5",
+   "numero": 5,
+   "tipo": "venta",
+   "fecha": "2026-08-11",
+   "clienteId": "c2",
+   "monedaPago": "USD",
+   "monedaPagoOtra": "",
+   "moneda": "ARS",
+   "monedaOtra": "",
+   "cantidad": 3000000,
+   "tc": 0.000657,
+   "comisionistaId": "o1",
+   "comision": 20,
+   "comisionMoneda": "USD",
+   "formaPago": "transferencia",
+   "formaRetiro": "cuenta corriente",
+   "partesPago": [],
+   "partesDivisa": [],
+   "lugarPago": "",
+   "lugarDivisa": "",
+   "entregaPago": "",
+   "entregaDivisa": "",
+   "patasHechas": {
+    "pago": true
+   },
+   "ok": "Completado",
+   "cancelado": false
+  },
+  {
+   "id": "op6",
+   "numero": 6,
+   "tipo": "compra",
+   "fecha": "2026-08-11",
+   "clienteId": "c1",
+   "monedaPago": "ARS",
+   "monedaPagoOtra": "",
+   "moneda": "Otra",
+   "monedaOtra": "JPY",
+   "cantidad": 1500000,
+   "tc": 10.2,
+   "comisionistaId": "",
+   "comision": 0,
+   "comisionMoneda": "USD",
+   "formaPago": "efectivo",
+   "formaRetiro": "efectivo",
+   "partesPago": [],
+   "partesDivisa": [],
+   "lugarPago": "retiro",
+   "lugarDivisa": "retiro",
+   "entregaPago": "retiro",
+   "entregaDivisa": "retiro",
+   "patasHechas": {
+    "pago": true,
+    "divisa": true
+   },
+   "ok": "Completado",
+   "cancelado": false
+  },
+  {
+   "id": "op7",
+   "numero": 7,
+   "tipo": "compra",
+   "fecha": "2026-08-11",
+   "clienteId": "c2",
+   "monedaPago": "ARS",
+   "monedaPagoOtra": "",
+   "moneda": "EUR",
+   "monedaOtra": "",
+   "cantidad": 2000,
+   "tc": 1600,
+   "comisionistaId": "",
+   "comision": 0,
+   "comisionMoneda": "USD",
+   "formaPago": "efectivo",
+   "formaRetiro": "efectivo",
+   "partesPago": [],
+   "partesDivisa": [],
+   "lugarPago": "retiro",
+   "lugarDivisa": "retiro",
+   "entregaPago": "retiro",
+   "entregaDivisa": "retiro",
+   "patasHechas": {
+    "pago": true,
+    "divisa": true
+   },
+   "ok": "Completado",
+   "cancelado": false
+  }
+ ],
+ "cripto": [
+  {
+   "id": "cr1",
+   "numero": 1,
+   "tipo": "compra",
+   "fecha": "2026-08-11",
+   "clienteId": "c1",
+   "monedaPago": "ARS",
+   "moneda": "USDT",
+   "cantidad": 5000,
+   "tc": 1480,
+   "comisionistaId": "",
+   "comision": 0,
+   "comisionMoneda": "USD",
+   "formaPago": "efectivo",
+   "formaRetiro": "transferencia",
+   "partesPago": [],
+   "partesDivisa": [],
+   "lugarPago": "retiro",
+   "lugarDivisa": "",
+   "entregaPago": "retiro",
+   "entregaDivisa": "",
+   "patasHechas": {
+    "pago": true,
+    "divisa": true
+   },
+   "ok": "Completado",
+   "cancelado": false,
+   "costo": 2,
+   "costoA": "cueva"
+  },
+  {
+   "id": "cr2",
+   "numero": 2,
+   "tipo": "venta",
+   "fecha": "2026-08-11",
+   "clienteId": "c2",
+   "monedaPago": "USDT",
+   "moneda": "USD",
+   "cantidad": 3000,
+   "tc": 1.0,
+   "comisionistaId": "",
+   "comision": 0,
+   "comisionMoneda": "USD",
+   "formaPago": "transferencia",
+   "formaRetiro": "transferencia",
+   "partesPago": [],
+   "partesDivisa": [],
+   "lugarPago": "",
+   "lugarDivisa": "",
+   "entregaPago": "",
+   "entregaDivisa": "",
+   "patasHechas": {
+    "pago": true,
+    "divisa": true
+   },
+   "ok": "Completado",
+   "cancelado": false,
+   "costo": 2,
+   "costoA": "cliente"
+  }
+ ],
+ "mayoristaOps": [
+  {
+   "id": "my1",
+   "numero": 1,
+   "tipo": "compra",
+   "fecha": "2026-08-11",
+   "comisionistaId": "m1",
+   "monedaPago": "ARS",
+   "monedaPagoOtra": "",
+   "moneda": "USD",
+   "monedaOtra": "",
+   "cantidad": 20000,
+   "tc": 1478,
+   "formaPago": "transferencia",
+   "formaRetiro": "transferencia",
+   "partesPago": [],
+   "partesDivisa": [],
+   "lugarPago": "",
+   "lugarDivisa": "",
+   "entregaPago": "",
+   "entregaDivisa": "",
+   "patasHechas": {
+    "pago": true,
+    "divisa": true
+   },
+   "ok": "Completado",
+   "cancelado": false
+  }
+ ],
+ "cables": [
+  {
+   "id": "cb1",
+   "numero": 1,
+   "fecha": "2026-08-11",
+   "fechaEjecucion": "2026-08-11",
+   "clienteId": "c2",
+   "comisionistaId": "m1",
+   "tipo": "Bajada",
+   "monto": 10000,
+   "costoPct": 1,
+   "margenPct": 1,
+   "formaMayorista": "cuenta corriente",
+   "formaCliente": "cuenta corriente",
+   "partesMayorista": [],
+   "partesCliente": [],
+   "lugarMayorista": "",
+   "lugarCliente": "",
+   "entregaMayorista": "",
+   "entregaCliente": "",
+   "patasHechas": {
+    "mayorista": true,
+    "cliente": true
+   },
+   "estado": "ejecutado",
+   "cancelado": false,
+   "obs": ""
+  },
+  {
+   "id": "cb2",
+   "numero": 2,
+   "fecha": "2026-08-11",
+   "fechaEjecucion": "2026-08-11",
+   "clienteId": "c1",
+   "comisionistaId": "m1",
+   "tipo": "Subida",
+   "monto": 8000,
+   "costoPct": -1,
+   "margenPct": 1,
+   "formaMayorista": "cuenta corriente",
+   "formaCliente": "cuenta corriente",
+   "partesMayorista": [],
+   "partesCliente": [],
+   "lugarMayorista": "",
+   "lugarCliente": "",
+   "entregaMayorista": "",
+   "entregaCliente": "",
+   "patasHechas": {
+    "mayorista": true,
+    "cliente": true
+   },
+   "estado": "ejecutado",
+   "cancelado": false,
+   "obs": "el mayorista paga"
+  },
+  {
+   "id": "cb3",
+   "numero": 3,
+   "fecha": "2026-08-11",
+   "fechaEjecucion": null,
+   "clienteId": "c3",
+   "comisionistaId": "m1",
+   "tipo": "Bajada",
+   "monto": 5000,
+   "costoPct": 1,
+   "margenPct": 2,
+   "formaMayorista": "efectivo",
+   "formaCliente": "efectivo",
+   "partesMayorista": [],
+   "partesCliente": [],
+   "lugarMayorista": "retiro",
+   "lugarCliente": "retiro",
+   "entregaMayorista": "retiro",
+   "entregaCliente": "retiro",
+   "patasHechas": {},
+   "estado": "pendiente",
+   "cancelado": false,
+   "obs": ""
+  }
+ ],
+ "ctacte": [
+  {
+   "id": "mc1",
+   "clienteId": "c1",
+   "fecha": "2026-08-11",
+   "moneda": "ARS",
+   "monto": -500000,
+   "tipoMov": "Cobramos efectivo del cliente",
+   "motivo": "cobro parcial",
+   "efectivo": true,
+   "lugar": "retiro",
+   "entrega": "retiro"
+  },
+  {
+   "id": "mc2",
+   "clienteId": "c2",
+   "fecha": "2026-08-11",
+   "moneda": "USD",
+   "monto": 1000,
+   "tipoMov": "Entregamos efectivo al cliente",
+   "motivo": "entrega",
+   "efectivo": true,
+   "lugar": "domicilio",
+   "entrega": "Av. Mitre 1200"
+  },
+  {
+   "id": "mc3",
+   "clienteId": "c3",
+   "fecha": "2026-08-11",
+   "moneda": "ARS",
+   "monto": 250000,
+   "tipoMov": "Ajuste a favor de la cueva",
+   "motivo": "diferencia de arqueo",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  },
+  {
+   "id": "mc4",
+   "clienteId": "c3",
+   "fecha": "2026-08-11",
+   "moneda": "USD",
+   "monto": -300,
+   "tipoMov": "Ajuste a favor del cliente",
+   "motivo": "bonificacion",
+   "efectivo": false,
+   "lugar": "",
+   "entrega": ""
+  }
+ ],
+ "gastos": [
+  {
+   "id": "g1",
+   "fecha": "2026-08-11",
+   "motivo": "Alquiler oficina",
+   "moneda": "ARS",
+   "monto": 1200000,
+   "montoOriginal": null,
+   "socio": "Socio A",
+   "obs": ""
+  },
+  {
+   "id": "g2",
+   "fecha": "2026-08-11",
+   "motivo": "Seguridad",
+   "moneda": "USD",
+   "monto": 300000,
+   "montoOriginal": 200,
+   "socio": "Socio B",
+   "obs": "convertido"
+  }
+ ],
+ "aportes": [
+  {
+   "id": "a1",
+   "socio": "Socio A",
+   "fecha": "2026-08-10",
+   "moneda": "USD",
+   "monto": 100000,
+   "concepto": "capital inicial"
+  },
+  {
+   "id": "a2",
+   "socio": "Socio B",
+   "fecha": "2026-08-10",
+   "moneda": "ARS",
+   "monto": 50000000,
+   "concepto": "capital inicial"
+  }
+ ],
+ "cierres": {
+  "2026-08-10": {
+   "cerrado": true,
+   "params": {
+    "baseCompra": 1475,
+    "baseVenta": 1495,
+    "usdLimpioCompra": 10,
+    "usdLimpioVenta": 5,
+    "margenUsdt": 1.5,
+    "margenCaraChica": 1,
+    "margenEuro": 2,
+    "margenReal": 3,
+    "margenLibra": 2.5,
+    "crossEurC": 1.09,
+    "crossEurV": 1.11,
+    "crossBrlC": 5.52,
+    "crossBrlV": 5.32,
+    "crossGbpC": 1.28,
+    "crossGbpV": 1.31
+   }
+  }
+ },
+ "params": {
+  "baseCompra": 1475,
+  "baseVenta": 1495,
+  "usdLimpioCompra": 10,
+  "usdLimpioVenta": 5,
+  "margenUsdt": 1.5,
+  "margenCaraChica": 1,
+  "margenEuro": 2,
+  "margenReal": 3,
+  "margenLibra": 2.5,
+  "crossEurC": 1.09,
+  "crossEurV": 1.11,
+  "crossBrlC": 5.52,
+  "crossBrlV": 5.32,
+  "crossGbpC": 1.28,
+  "crossGbpV": 1.31
+ },
+ "usuarios": [],
+ "audit": [],
+ "operador": "Administrador"
+}
