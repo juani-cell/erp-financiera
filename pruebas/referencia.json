@@ -16,12 +16,26 @@
     "movPesos": 0,
     "movUsd": 0,
     "movPesosTotalDia": 0,
-    "movDivDia": {},
+    "movDivDia": {
+     "USD": 0,
+     "JPY": 0,
+     "EUR": 0,
+     "BRL": 0,
+     "LBR": 0,
+     "USDT": 0
+    },
     "tc": 1495,
     "congelado": false,
     "sPesos": 0,
     "sUsd": 0,
-    "saldos": {},
+    "saldos": {
+     "USD": 0,
+     "JPY": 0,
+     "EUR": 0,
+     "BRL": 0,
+     "LBR": 0,
+     "USDT": 0
+    },
     "cerrado": false,
     "ayerPesos": 0,
     "ayerSaldos": {},
@@ -95,18 +109,35 @@
     "movUsd": 0,
     "movPesosTotalDia": 50000000,
     "movDivDia": {
-     "USD": 100000
+     "USD": 100000,
+     "JPY": 0,
+     "EUR": 0,
+     "BRL": 0,
+     "LBR": 0,
+     "USDT": 0
     },
     "tc": 1495,
     "congelado": true,
     "sPesos": 50000000,
     "sUsd": 100000,
     "saldos": {
-     "USD": 100000
+     "USD": 100000,
+     "JPY": 0,
+     "EUR": 0,
+     "BRL": 0,
+     "LBR": 0,
+     "USDT": 0
     },
     "cerrado": true,
     "ayerPesos": 0,
-    "ayerSaldos": {},
+    "ayerSaldos": {
+     "USD": 0,
+     "JPY": 0,
+     "EUR": 0,
+     "BRL": 0,
+     "LBR": 0,
+     "USDT": 0
+    },
     "ganOperativa": 1120,
     "varTC": 0,
     "gastosHoy": 0,
@@ -200,7 +231,12 @@
     "cerrado": false,
     "ayerPesos": 50000000,
     "ayerSaldos": {
-     "USD": 100000
+     "USD": 100000,
+     "JPY": 0,
+     "EUR": 0,
+     "BRL": 0,
+     "LBR": 0,
+     "USDT": 0
     },
     "ganOperativa": -7465.582379862673,
     "varTC": -550.0792114064388,
@@ -316,7 +352,12 @@
    "cerrado": false,
    "ayerPesos": 50000000,
    "ayerSaldos": {
-    "USD": 100000
+    "USD": 100000,
+    "JPY": 0,
+    "EUR": 0,
+    "BRL": 0,
+    "LBR": 0,
+    "USDT": 0
    },
    "ganOperativa": -7465.582379862673,
    "varTC": -550.0792114064388,

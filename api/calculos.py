@@ -93,6 +93,37 @@ def caja_completada_de(partes, forma_unica, key_base, patas_hechas, total) -> fl
     return total if pata_lista(patas_hechas, key_base, False) else 0.0
 
 
+def caja_en_fecha(partes, forma_unica, key_base, patas_hechas, patas_fechas,
+                  total, fecha_op, fecha_objetivo) -> float:
+    """Trade date vs settlement date: una pata mueve caja el día en que se
+    COMPLETÓ (`patasFechas`), no el día en que se cargó la operación.
+
+    Una pata sin fecha explícita (dato viejo, o una cuenta corriente que arrancó
+    Completada por default) cae en `fecha_op`, igual que antes de esta regla. Por
+    eso el fallback es load-bearing: sin él, todo el histórico se movería de día.
+    """
+    pf = patas_fechas or {}
+
+    def fecha_de(k):
+        return pf.get(k) or fecha_op
+
+    if isinstance(partes, list) and partes:
+        acc = 0.0
+        for i, p in enumerate(partes):
+            if p.get("forma") == "cuenta corriente":
+                continue
+            key = f"{key_base}-{i}"
+            if not pata_lista(patas_hechas, key, False) or fecha_de(key) != fecha_objetivo:
+                continue
+            acc += num(p.get("monto"))
+        return acc
+    if forma_unica == "cuenta corriente":
+        return 0.0
+    if not pata_lista(patas_hechas, key_base, False) or fecha_de(key_base) != fecha_objetivo:
+        return 0.0
+    return total
+
+
 def claves_accionables(tipo: str, r: dict) -> list[str]:
     """Las patas que requieren una acción física (todo lo que no sea cta. cte.)."""
     keys: list[str] = []
@@ -435,6 +466,14 @@ def serie(d: dict) -> dict:
         b = aportes_por_fecha.setdefault(a.get("fecha"), {})
         b[mon] = b.get(mon, 0.0) + num(a.get("monto"))
 
+    def fechas_de_patas(arr):
+        """Las fechas de liquidación tienen que generar su propia fila: si una
+        pata se completa un día sin otra actividad, ese día igual mueve caja."""
+        out = []
+        for r in arr or []:
+            out.extend((r.get("patasFechas") or {}).values())
+        return out
+
     fuentes = ([o.get("fecha") for o in d.get("ops") or []]
                + [m.get("fecha") for m in d.get("ctacte") or []]
                + [o.get("fecha") for o in d.get("cripto") or []]
@@ -443,14 +482,23 @@ def serie(d: dict) -> dict:
                + [c.get("fechaEjecucion") for c in d.get("cables") or [] if c.get("fechaEjecucion")]
                + list((d.get("cierres") or {}).keys())
                + list(gastos_por_fecha.keys())
-               + [a.get("fecha") for a in d.get("aportes") or []])
+               + [a.get("fecha") for a in d.get("aportes") or []]
+               + fechas_de_patas(d.get("ops"))
+               + fechas_de_patas(d.get("cripto"))
+               + fechas_de_patas(d.get("mayoristaOps"))
+               + fechas_de_patas(d.get("cables")))
     fechas = sorted({f for f in fuentes if f})
 
-    def caja_de(o, total_pago, total_div):
+    def caja_de(o, total_pago, total_div, f):
         """Sólo la porción en efectivo/transferencia ya marcada Completada mueve
-        caja. Cuenta corriente nunca mueve caja acá, y pendiente tampoco."""
-        return (caja_completada_de(o.get("partesPago"), o.get("formaPago"), "pago", o.get("patasHechas"), total_pago),
-                caja_completada_de(o.get("partesDivisa"), o.get("formaRetiro"), "divisa", o.get("patasHechas"), total_div))
+        caja, Y el día en que se completó. Cuenta corriente nunca mueve caja
+        acá, y pendiente tampoco."""
+        return (caja_en_fecha(o.get("partesPago"), o.get("formaPago"), "pago",
+                              o.get("patasHechas"), o.get("patasFechas"),
+                              total_pago, o.get("fecha"), f),
+                caja_en_fecha(o.get("partesDivisa"), o.get("formaRetiro"), "divisa",
+                              o.get("patasHechas"), o.get("patasFechas"),
+                              total_div, o.get("fecha"), f))
 
     def div_diff(before: dict, after: dict) -> dict:
         out = {}
@@ -471,11 +519,25 @@ def serie(d: dict) -> dict:
     pat_real = None
     rows = []
 
+    # Con la regla de liquidación por pata, cada día hay que mirar TODAS las
+    # operaciones y no sólo las cargadas ese día: una pata de una operación
+    # vieja puede completarse hoy. El filtro por fecha vive ahora adentro de
+    # `caja_en_fecha`. Lo que SÍ sigue atado al día de la operación (volumen
+    # operado, costo de red de la cripto) lleva su guarda explícita abajo.
+    ops_todas = [o for o in (d.get("ops") or []) if not o.get("cancelado")]
+    cripto_todas = [o for o in (d.get("cripto") or []) if not o.get("cancelado")]
+    cables_todos = [c for c in (d.get("cables") or []) if not c.get("cancelado")]
+    mayorista_todas = [o for o in (d.get("mayoristaOps") or []) if not o.get("cancelado")]
+
     for f in fechas:
-        ops = [o for o in (d.get("ops") or []) if o.get("fecha") == f and not o.get("cancelado")]
-        cripto_dia = [o for o in (d.get("cripto") or []) if o.get("fecha") == f and not o.get("cancelado")]
-        cables_dia = [c for c in (d.get("cables") or []) if c.get("fecha") == f and not c.get("cancelado")]
-        mayorista_dia = [o for o in (d.get("mayoristaOps") or []) if o.get("fecha") == f and not o.get("cancelado")]
+        # Las listas del día siguen haciendo falta, pero SÓLO para contar
+        # (el `cant` de cada renglón del desglose). La plata sale de las listas
+        # completas de arriba. Son dos preguntas distintas: "cuántas operaciones
+        # se cargaron hoy" y "cuánta caja se movió hoy".
+        ops = [o for o in ops_todas if o.get("fecha") == f]
+        cripto_dia = [o for o in cripto_todas if o.get("fecha") == f]
+        cables_dia = [c for c in cables_todos if c.get("fecha") == f]
+        mayorista_dia = [o for o in mayorista_todas if o.get("fecha") == f]
 
         def volumen_usd(q, tc, mon_a, mon_b, tipo):
             """Si alguna pata ya es USD, ese es el monto real operado: no se
@@ -502,7 +564,7 @@ def serie(d: dict) -> dict:
                 else:
                     mon = _moneda_de(o, "moneda", "monedaOtra", "USD")
                     mon_a = _moneda_de(o, "monedaPago", "monedaPagoOtra", "ARS")
-                pesos_caja, divisa_caja = caja_de(o, q * tc, q)
+                pesos_caja, divisa_caja = caja_de(o, q * tc, q, f)
                 if mon == "ARS":
                     mov_pesos += divisa_caja
                 else:
@@ -511,14 +573,15 @@ def serie(d: dict) -> dict:
                     mov_pesos += -pesos_caja
                 else:
                     mov_div[mon_a] = mov_div.get(mon_a, 0.0) - pesos_caja
-                if con_costo_cripto and o.get("costoA") == "cueva" and num(o.get("costo")):
+                if (o.get("fecha") == f and con_costo_cripto
+                        and o.get("costoA") == "cueva" and num(o.get("costo"))):
                     mov_div["USDT"] = mov_div.get("USDT", 0.0) - num(o.get("costo"))
-                if o.get("ok") == ENTREGADO:
+                if o.get("fecha") == f and o.get("ok") == ENTREGADO:
                     vol += volumen_usd(q, tc, mon_a, mon, tipo_vol or o.get("tipo"))
             return vol
 
         p0, u0, snap0 = mov_pesos, mov_div.get("USD", 0.0), dict(mov_div)
-        vol_cambio = aplicar(ops)
+        vol_cambio = aplicar(ops_todas)
         mov_pesos_cambio = mov_pesos - p0
         mov_usd_cambio = mov_div.get("USD", 0.0) - u0
         div_delta_cambio = div_diff(snap0, mov_div)
@@ -526,7 +589,7 @@ def serie(d: dict) -> dict:
             div_delta_cambio["ARS"] = mov_pesos_cambio
 
         p1, u1, snap1 = mov_pesos, mov_div.get("USD", 0.0), dict(mov_div)
-        vol_cripto = aplicar(cripto_dia, con_costo_cripto=True)
+        vol_cripto = aplicar(cripto_todas, con_costo_cripto=True)
         mov_pesos_cripto = mov_pesos - p1
         mov_usd_cripto = mov_div.get("USD", 0.0) - u1
         div_delta_cripto = div_diff(snap1, mov_div)
@@ -534,7 +597,7 @@ def serie(d: dict) -> dict:
             div_delta_cripto["ARS"] = mov_pesos_cripto
 
         p1b, u1b, snap1b = mov_pesos, mov_div.get("USD", 0.0), dict(mov_div)
-        vol_mayorista = aplicar(mayorista_dia, tipo_vol="compra")
+        vol_mayorista = aplicar(mayorista_todas, tipo_vol="compra")
         mov_pesos_mayorista = mov_pesos - p1b
         mov_usd_mayorista = mov_div.get("USD", 0.0) - u1b
         div_delta_mayorista = div_diff(snap1b, mov_div)
@@ -543,15 +606,17 @@ def serie(d: dict) -> dict:
 
         u2, snap2 = mov_div.get("USD", 0.0), dict(mov_div)
         vol_cable = 0.0
-        for c in cables_dia:
+        for c in cables_todos:
             es_subida = c.get("tipo") == "Subida"
             calc = cable_calc(c)
-            caja_may = caja_completada_de(c.get("partesMayorista"), c.get("formaMayorista"),
-                                          "mayorista", c.get("patasHechas"), calc["montoMayorista"])
-            caja_cli = caja_completada_de(c.get("partesCliente"), c.get("formaCliente"),
-                                          "cliente", c.get("patasHechas"), calc["montoCliente"])
+            caja_may = caja_en_fecha(c.get("partesMayorista"), c.get("formaMayorista"),
+                                     "mayorista", c.get("patasHechas"), c.get("patasFechas"),
+                                     calc["montoMayorista"], c.get("fecha"), f)
+            caja_cli = caja_en_fecha(c.get("partesCliente"), c.get("formaCliente"),
+                                     "cliente", c.get("patasHechas"), c.get("patasFechas"),
+                                     calc["montoCliente"], c.get("fecha"), f)
             mov_div["USD"] = mov_div.get("USD", 0.0) + ((caja_cli - caja_may) if es_subida else (caja_may - caja_cli))
-            if c.get("estado") == "ejecutado":
+            if c.get("fecha") == f and c.get("estado") == "ejecutado":
                 vol_cable += num(c.get("monto"))
         mov_usd_cable = mov_div.get("USD", 0.0) - u2
         div_delta_cable = div_diff(snap2, mov_div)
