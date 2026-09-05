@@ -142,3 +142,37 @@ Un control que no se demuestra que atrapa la cosa es sólo más código.
 Si el prototipo trae una migración destructiva, hay que **fijar sus banderas** en
 `casos.json` (`_datosEnCero: true`, etc.) para neutralizarla. Recién entonces el
 diff de la referencia muestra el cambio de comportamiento real y no el borrado.
+
+
+---
+
+## La regla de imputación por pata, y por qué hubo que inventar casos nuevos
+
+Cuando Agus implementó `patasFechas` (*una pata mueve caja el día en que se
+completa*), se midió el impacto sobre los 40 casos y dio **cero diferencias**.
+Eso parecía buena noticia y en parte lo era: **su regla es compatible hacia
+atrás**. Pero significaba otra cosa, peor: **ningún caso ejercitaba la regla**,
+porque todos caían en el fallback. Ni siquiera `cb4`, que existe justamente para
+discriminar la imputación.
+
+Un arnés que no distingue la regla vieja de la nueva no sirve para probar que
+implementamos la nueva.
+
+### Los 4 casos que se agregaron, y qué discrimina cada uno
+
+| Caso | Qué ejercita |
+|---|---|
+| `op12` | El núcleo: cargada el día **cerrado**, una pata liquida ese día y la otra al siguiente. La caja se parte entre los dos días |
+| `op13` | Una pata liquida un día **sin ninguna otra actividad**, así que la fila de la serie tiene que nacer de la fecha de liquidación. Y la otra pata no tiene fecha: el mismo caso cubre los dos caminos |
+| `cr3` | La guarda del **costo de red**: la caja va al día de liquidación pero el costo se queda en el día de la operación |
+| `cb5` | El camino de los **cables**, que es código aparte (`partesMayorista`/`partesCliente`) |
+
+`cb4` se dejó **sin** `patasFechas` a propósito: hoy es la cobertura del
+fallback, que es la que protege todo el histórico del cliente.
+
+### Y 6 mutaciones nuevas, porque los casos no valen hasta que muerden
+
+Cada una tiene que poner el gate en rojo: sacar el filtro por fecha, sacar el
+fallback, sacar la guarda del costo de red, hacer que las fechas de liquidación
+no generen fila, volver a mirar sólo las operaciones del día, y romper la
+imputación por fecha en el camino de los cables. **Las 6 muerden.**

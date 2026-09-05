@@ -29,6 +29,25 @@ OBJETIVO = RAIZ / "api" / "calculos.py"
 
 # (descripción, texto original, texto mutado)
 MUTACIONES = [
+    # ── La regla de imputación por pata (trade date vs settlement date) ──────
+    ("una pata mueve caja el día en que se COMPLETÓ, no el día de la operación",
+     "if not pata_lista(patas_hechas, key, False) or fecha_de(key) != fecha_objetivo:",
+     "if not pata_lista(patas_hechas, key, False):"),
+    ("una pata SIN fecha de liquidación cae en la fecha de la operación",
+     "return pf.get(k) or fecha_op",
+     "return pf.get(k)"),
+    ("el costo de red de la cripto se imputa al día de la OPERACIÓN, no al de liquidación",
+     'if (o.get("fecha") == f and con_costo_cripto',
+     'if ((con_costo_cripto or False)'),
+    ("la fecha de liquidación de una pata genera su propia fila de la serie",
+     "out.extend((r.get(\"patasFechas\") or {}).values())",
+     "pass"),
+    ("cada día se miran TODAS las operaciones, no sólo las cargadas ese día",
+     "vol_cambio = aplicar(ops_todas)",
+     "vol_cambio = aplicar(ops)"),
+    ("el camino de los CABLES también imputa por fecha de pata",
+     'calc["montoCliente"], c.get("fecha"), f)',
+     'calc["montoCliente"], c.get("fecha"), c.get("fecha"))'),
     ("traslado de costo del cable sólo si es positivo",
      "costo_trasladado = max(costo_pct, 0.0)",
      "costo_trasladado = costo_pct"),

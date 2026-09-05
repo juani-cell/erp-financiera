@@ -105,28 +105,28 @@
    },
    {
     "fecha": "2026-08-10",
-    "movPesos": 0,
-    "movUsd": 0,
-    "movPesosTotalDia": 50000000,
+    "movPesos": -1500000,
+    "movUsd": -3014.9999999999995,
+    "movPesosTotalDia": 48500000,
     "movDivDia": {
-     "USD": 100000,
+     "USD": 96985,
      "JPY": 0,
      "EUR": 0,
      "BRL": 0,
      "LBR": 0,
-     "USDT": 0
+     "USDT": -3
     },
     "tc": 1495,
     "congelado": true,
-    "sPesos": 50000000,
-    "sUsd": 100000,
+    "sPesos": 48500000,
+    "sUsd": 96985,
     "saldos": {
-     "USD": 100000,
+     "USD": 96985,
      "JPY": 0,
      "EUR": 0,
      "BRL": 0,
      "LBR": 0,
-     "USDT": 0
+     "USDT": -3
     },
     "cerrado": true,
     "ayerPesos": 0,
@@ -138,17 +138,17 @@
      "LBR": 0,
      "USDT": 0
     },
-    "ganOperativa": 1120,
+    "ganOperativa": -2901.344481605338,
     "varTC": 0,
     "gastosHoy": 0,
-    "resultadoTotal": 1120,
-    "mesTotal": 2120,
-    "mesOperativa": 2120,
+    "resultadoTotal": -2901.344481605338,
+    "mesTotal": -1901.344481605338,
+    "mesOperativa": -1901.344481605338,
     "mesVarTC": 0,
     "mesGastos": 0,
-    "patValuado": 135564.8160535117,
-    "patValuadoVar": 134564.8160535117,
-    "patReal": 2120,
+    "patValuado": 131543.47157190635,
+    "patValuadoVar": 130543.47157190635,
+    "patReal": -1901.344481605338,
     "ccUsd": 2120,
     "ccPesos": 0,
     "ccDiv": {
@@ -159,20 +159,24 @@
      {
       "tipo": "cambio",
       "label": "Cambio de divisas",
-      "movPesos": 0,
+      "movPesos": -1500000,
       "movUsd": 0,
-      "cant": 0,
-      "volUsd": 0,
-      "divs": {}
+      "cant": 1,
+      "volUsd": 1000,
+      "divs": {
+       "ARS": -1500000
+      }
      },
      {
       "tipo": "cripto",
       "label": "Cripto (USDT)",
       "movPesos": 0,
       "movUsd": 0,
-      "cant": 0,
-      "volUsd": 0,
-      "divs": {}
+      "cant": 1,
+      "volUsd": 2000,
+      "divs": {
+       "USDT": -3
+      }
      },
      {
       "tipo": "mayorista",
@@ -187,10 +191,12 @@
       "tipo": "cable",
       "label": "Cables",
       "movPesos": 0,
-      "movUsd": 0,
-      "cant": 1,
-      "volUsd": 6000,
-      "divs": {}
+      "movUsd": -3014.9999999999995,
+      "cant": 2,
+      "volUsd": 9000,
+      "divs": {
+       "USD": -3014.9999999999995
+      }
      },
      {
       "tipo": "ctacte",
@@ -205,50 +211,50 @@
    },
    {
     "fecha": "2026-08-11",
-    "movPesos": -80887000,
-    "movUsd": 33800,
-    "movPesosTotalDia": -80887000,
+    "movPesos": -83867000,
+    "movUsd": 37460,
+    "movPesosTotalDia": -83867000,
     "movDivDia": {
-     "USD": 33800,
+     "USD": 37460,
      "JPY": 1500000,
      "EUR": 2000,
      "BRL": 15000,
      "LBR": 1200,
-     "USDT": 1998
+     "USDT": 3998
     },
     "tc": 1520,
     "congelado": false,
-    "sPesos": -30887000,
-    "sUsd": 133800,
+    "sPesos": -35367000,
+    "sUsd": 134445,
     "saldos": {
-     "USD": 133800,
+     "USD": 134445,
      "JPY": 1500000,
      "EUR": 2000,
      "BRL": 15000,
      "LBR": 1200,
-     "USDT": 1998
+     "USDT": 3995
     },
     "cerrado": false,
-    "ayerPesos": 50000000,
+    "ayerPesos": 48500000,
     "ayerSaldos": {
-     "USD": 100000,
+     "USD": 96985,
      "JPY": 0,
      "EUR": 0,
      "BRL": 0,
      "LBR": 0,
-     "USDT": 0
+     "USDT": -3
     },
-    "ganOperativa": -7465.582379862673,
-    "varTC": -550.0792114064388,
+    "ganOperativa": -3766.1086956521544,
+    "varTC": -533.5768350642466,
     "gastosHoy": 989.4736842105264,
-    "resultadoTotal": -9005.135275479639,
-    "mesTotal": -6885.135275479639,
-    "mesOperativa": -5345.582379862673,
-    "mesVarTC": -550.0792114064388,
+    "resultadoTotal": -5289.159214926927,
+    "mesTotal": -7190.503696532265,
+    "mesOperativa": -5667.453177257492,
+    "mesVarTC": -533.5768350642466,
     "mesGastos": 989.4736842105264,
-    "patValuado": 126559.68077803205,
-    "patValuadoVar": -9005.135275479639,
-    "patReal": -6335.0560640732,
+    "patValuado": 126254.31235697943,
+    "patValuadoVar": -5289.159214926927,
+    "patReal": -6656.926861468019,
     "ccUsd": -6141.315789473684,
     "ccPesos": -12390000,
     "ccDiv": {
@@ -261,11 +267,11 @@
       "tipo": "cambio",
       "label": "Cambio de divisas",
       "movPesos": -43230000,
-      "movUsd": 15000,
-      "cant": 10,
-      "volUsd": 33574.33333333333,
+      "movUsd": 15600,
+      "cant": 11,
+      "volUsd": 33974.33333333333,
       "divs": {
-       "USD": 15000,
+       "USD": 15600,
        "JPY": 1500000,
        "EUR": 2000,
        "BRL": 15000,
@@ -276,13 +282,13 @@
      {
       "tipo": "cripto",
       "label": "Cripto (USDT)",
-      "movPesos": -7397000,
+      "movPesos": -10377000,
       "movUsd": 0,
       "cant": 2,
       "volUsd": 8000,
       "divs": {
-       "USDT": 1998,
-       "ARS": -7397000
+       "USDT": 3998,
+       "ARS": -10377000
       }
      },
      {
@@ -301,10 +307,12 @@
       "tipo": "cable",
       "label": "Cables",
       "movPesos": 0,
-      "movUsd": 0,
+      "movUsd": 3060,
       "cant": 3,
       "volUsd": 18000,
-      "divs": {}
+      "divs": {
+       "USD": 3060
+      }
      },
      {
       "tipo": "ctacte",
@@ -312,6 +320,109 @@
       "movPesos": 500000,
       "movUsd": -1000,
       "cant": 2,
+      "volUsd": 0,
+      "divs": {}
+     }
+    ]
+   },
+   {
+    "fecha": "2026-08-12",
+    "movPesos": 612000,
+    "movUsd": 0,
+    "movPesosTotalDia": 612000,
+    "movDivDia": {
+     "USD": 0,
+     "JPY": 0,
+     "EUR": 0,
+     "BRL": 0,
+     "LBR": 0,
+     "USDT": 0
+    },
+    "tc": 1520,
+    "congelado": false,
+    "sPesos": -34755000,
+    "sUsd": 134445,
+    "saldos": {
+     "USD": 134445,
+     "JPY": 1500000,
+     "EUR": 2000,
+     "BRL": 15000,
+     "LBR": 1200,
+     "USDT": 3995
+    },
+    "cerrado": false,
+    "ayerPesos": -35367000,
+    "ayerSaldos": {
+     "USD": 134445,
+     "JPY": 1500000,
+     "EUR": 2000,
+     "BRL": 15000,
+     "LBR": 1200,
+     "USDT": 3995
+    },
+    "ganOperativa": 402.63157894735923,
+    "varTC": 0,
+    "gastosHoy": 0,
+    "resultadoTotal": 402.63157894735923,
+    "mesTotal": -6787.872117584906,
+    "mesOperativa": -5264.821598310133,
+    "mesVarTC": -533.5768350642466,
+    "mesGastos": 989.4736842105264,
+    "patValuado": 126656.94393592679,
+    "patValuadoVar": 402.63157894735923,
+    "patReal": -6254.295282520659,
+    "ccUsd": -6141.315789473684,
+    "ccPesos": -12390000,
+    "ccDiv": {
+     "USD cara chica": 500,
+     "USD": 1510,
+     "EUR": 0
+    },
+    "desglose": [
+     {
+      "tipo": "cambio",
+      "label": "Cambio de divisas",
+      "movPesos": 612000,
+      "movUsd": 0,
+      "cant": 0,
+      "volUsd": 0,
+      "divs": {
+       "ARS": 612000
+      }
+     },
+     {
+      "tipo": "cripto",
+      "label": "Cripto (USDT)",
+      "movPesos": 0,
+      "movUsd": 0,
+      "cant": 0,
+      "volUsd": 0,
+      "divs": {}
+     },
+     {
+      "tipo": "mayorista",
+      "label": "Tesorería",
+      "movPesos": 0,
+      "movUsd": 0,
+      "cant": 0,
+      "volUsd": 0,
+      "divs": {}
+     },
+     {
+      "tipo": "cable",
+      "label": "Cables",
+      "movPesos": 0,
+      "movUsd": 0,
+      "cant": 0,
+      "volUsd": 0,
+      "divs": {}
+     },
+     {
+      "tipo": "ctacte",
+      "label": "Movimientos de caja (cta. cte.)",
+      "movPesos": 0,
+      "movUsd": 0,
+      "cant": 0,
       "volUsd": 0,
       "divs": {}
      }
@@ -325,51 +436,51 @@
    "eur": 0
   },
   "ultimo": {
-   "fecha": "2026-08-11",
-   "movPesos": -80887000,
-   "movUsd": 33800,
-   "movPesosTotalDia": -80887000,
+   "fecha": "2026-08-12",
+   "movPesos": 612000,
+   "movUsd": 0,
+   "movPesosTotalDia": 612000,
    "movDivDia": {
-    "USD": 33800,
-    "JPY": 1500000,
-    "EUR": 2000,
-    "BRL": 15000,
-    "LBR": 1200,
-    "USDT": 1998
-   },
-   "tc": 1520,
-   "congelado": false,
-   "sPesos": -30887000,
-   "sUsd": 133800,
-   "saldos": {
-    "USD": 133800,
-    "JPY": 1500000,
-    "EUR": 2000,
-    "BRL": 15000,
-    "LBR": 1200,
-    "USDT": 1998
-   },
-   "cerrado": false,
-   "ayerPesos": 50000000,
-   "ayerSaldos": {
-    "USD": 100000,
+    "USD": 0,
     "JPY": 0,
     "EUR": 0,
     "BRL": 0,
     "LBR": 0,
     "USDT": 0
    },
-   "ganOperativa": -7465.582379862673,
-   "varTC": -550.0792114064388,
-   "gastosHoy": 989.4736842105264,
-   "resultadoTotal": -9005.135275479639,
-   "mesTotal": -6885.135275479639,
-   "mesOperativa": -5345.582379862673,
-   "mesVarTC": -550.0792114064388,
+   "tc": 1520,
+   "congelado": false,
+   "sPesos": -34755000,
+   "sUsd": 134445,
+   "saldos": {
+    "USD": 134445,
+    "JPY": 1500000,
+    "EUR": 2000,
+    "BRL": 15000,
+    "LBR": 1200,
+    "USDT": 3995
+   },
+   "cerrado": false,
+   "ayerPesos": -35367000,
+   "ayerSaldos": {
+    "USD": 134445,
+    "JPY": 1500000,
+    "EUR": 2000,
+    "BRL": 15000,
+    "LBR": 1200,
+    "USDT": 3995
+   },
+   "ganOperativa": 402.63157894735923,
+   "varTC": 0,
+   "gastosHoy": 0,
+   "resultadoTotal": 402.63157894735923,
+   "mesTotal": -6787.872117584906,
+   "mesOperativa": -5264.821598310133,
+   "mesVarTC": -533.5768350642466,
    "mesGastos": 989.4736842105264,
-   "patValuado": 126559.68077803205,
-   "patValuadoVar": -9005.135275479639,
-   "patReal": -6335.0560640732,
+   "patValuado": 126656.94393592679,
+   "patValuadoVar": 402.63157894735923,
+   "patReal": -6254.295282520659,
    "ccUsd": -6141.315789473684,
    "ccPesos": -12390000,
    "ccDiv": {
@@ -381,58 +492,47 @@
     {
      "tipo": "cambio",
      "label": "Cambio de divisas",
-     "movPesos": -43230000,
-     "movUsd": 15000,
-     "cant": 10,
-     "volUsd": 33574.33333333333,
+     "movPesos": 612000,
+     "movUsd": 0,
+     "cant": 0,
+     "volUsd": 0,
      "divs": {
-      "USD": 15000,
-      "JPY": 1500000,
-      "EUR": 2000,
-      "BRL": 15000,
-      "LBR": 1200,
-      "ARS": -43230000
+      "ARS": 612000
      }
     },
     {
      "tipo": "cripto",
      "label": "Cripto (USDT)",
-     "movPesos": -7397000,
+     "movPesos": 0,
      "movUsd": 0,
-     "cant": 2,
-     "volUsd": 8000,
-     "divs": {
-      "USDT": 1998,
-      "ARS": -7397000
-     }
+     "cant": 0,
+     "volUsd": 0,
+     "divs": {}
     },
     {
      "tipo": "mayorista",
      "label": "Tesorería",
-     "movPesos": -29560000,
-     "movUsd": 20000,
-     "cant": 1,
-     "volUsd": 20000,
-     "divs": {
-      "USD": 20000,
-      "ARS": -29560000
-     }
+     "movPesos": 0,
+     "movUsd": 0,
+     "cant": 0,
+     "volUsd": 0,
+     "divs": {}
     },
     {
      "tipo": "cable",
      "label": "Cables",
      "movPesos": 0,
      "movUsd": 0,
-     "cant": 3,
-     "volUsd": 18000,
+     "cant": 0,
+     "volUsd": 0,
      "divs": {}
     },
     {
      "tipo": "ctacte",
      "label": "Movimientos de caja (cta. cte.)",
-     "movPesos": 500000,
-     "movUsd": -1000,
-     "cant": 2,
+     "movPesos": 0,
+     "movUsd": 0,
+     "cant": 0,
      "volUsd": 0,
      "divs": {}
     }
@@ -1151,14 +1251,18 @@
     "ctacte": "los 4 movimientos manuales: cobrar efectivo, entregar efectivo, ajuste a favor cueva, ajuste a favor cliente",
     "cotiz": "apertura y cierre del mismo dia, mas un cierre posterior con TC distinto para que la variacion por TC no sea cero",
     "cierres": "un dia CERRADO con params congelados",
-    "cb4": "CASO DISCRIMINANTE de la regla de imputacion. Cargado el 2026-08-10 (que esta CERRADO) y ejecutado el 2026-08-11. Con la regla vigente el movimiento cae el 10; con la regla propuesta (imputar al completado) caeria el 11. Sin este caso el arnes seria CIEGO al cambio de regla.",
+    "cb4": "CASO DISCRIMINANTE de la regla de imputacion. Cargado el 2026-08-10 (que esta CERRADO) y ejecutado el 2026-08-11. Con la regla vigente el movimiento cae el 10; con la regla propuesta (imputar al completado) caeria el 11. Sin este caso el arnes seria CIEGO al cambio de regla. ⚠️ ACTUALIZADO 5/9: con la regla nueva ya implementada, cb4 NO tiene `patasFechas`, así que hoy ejercita el FALLBACK (sin fecha explícita, usa la fecha de la operación). Se deja tal cual A PROPÓSITO: esa cobertura es la que protege todo el histórico.",
     "op8": "pata de PAGO en cuenta corriente con la clave AUSENTE en patasHechas. Ejercita el default 'una pata en cta cte arranca completada'. Sin este caso el gate no detecta si ese default se invierte: lo comprobe rompiendolo y el gate seguia en verde.",
     "op9": "igual que op8 pero del lado de la pata de DIVISA, para cubrir el otro branch.",
     "op10": "compra de REALES: ejercita la valuacion por crossBrl, que se DIVIDE (no se multiplica). Sin este caso el gate no detectaba invertir esa operacion.",
     "op11": "compra de LIBRAS: ejercita la valuacion por crossGbp, que se multiplica.",
     "mc5_mc6": "dos movimientos OPUESTOS en EUR para el mismo cliente: el saldo netea a cero y por lo tanto esa moneda NO debe aparecer en su lista. Sin esto el gate no detectaba si se quitaba el filtro.",
     "mc7": "⚠️ RAREZA DEFENSIVA, no un requisito de negocio: un movimiento de un mayorista guardado con clienteId en vez de comisionistaId. El codigo lo tolera y lo suma a la cuenta del comisionista. Esta cubierto para que, si algun dia se decide sacar esa tolerancia, el gate muestre que cambio.",
-    "mc8_mc9_mc10": "COLA FIFO CON PROFUNDIDAD: dos saldos a favor (9 y 10 de agosto) y despues una cancelacion de 1500 que cubre el primero entero y parte del segundo. La antiguedad resultante tiene que ser la del 10, no la del 9. Con una cola de una sola entrada, sacar del frente o del fondo da lo mismo y el gate no distingue. Ademas es el unico caso que ejercita la moneda 'USD cara chica'."
+    "mc8_mc9_mc10": "COLA FIFO CON PROFUNDIDAD: dos saldos a favor (9 y 10 de agosto) y despues una cancelacion de 1500 que cubre el primero entero y parte del segundo. La antiguedad resultante tiene que ser la del 10, no la del 9. Con una cola de una sola entrada, sacar del frente o del fondo da lo mismo y el gate no distingue. Ademas es el unico caso que ejercita la moneda 'USD cara chica'.",
+    "op12": "NÚCLEO de la regla de imputación: cargada el 2026-08-10 (día CERRADO) con la pata de pesos liquidada ese mismo día y la de divisa el 11. La caja tiene que partirse entre los dos días. Con la regla vieja las dos caían el 10.",
+    "op13": "Una pata liquida el 2026-08-12, un día SIN ninguna otra actividad: prueba que la fecha de liquidación genera su propia fila de la serie. Y la pata de pago NO tiene fecha, así que cae en el fallback: el mismo caso ejercita los dos caminos.",
+    "cr3": "DISCRIMINA la guarda de fecha del costo de red: cargada el 10 con las dos patas liquidando el 11. La caja va al 11, pero el costo de red de 3 USDT tiene que quedarse en el 10, que es la fecha de la operación. Sin este caso, sacar esa guarda no rompe nada.",
+    "cb5": "El camino de los CABLES es código aparte (partesMayorista/partesCliente): cable ejecutado el 10 con la pata del mayorista liquidada el 10 y la del cliente el 11."
    }
   },
   "clientes": [
@@ -1644,6 +1748,77 @@
     "tc": 1900,
     "lugar": "retiro",
     "_patasFijas": true
+   },
+   {
+    "id": "op12",
+    "numero": 12,
+    "tipo": "compra",
+    "fecha": "2026-08-10",
+    "clienteId": "c1",
+    "monedaPago": "ARS",
+    "monedaPagoOtra": "",
+    "moneda": "USD",
+    "monedaOtra": "",
+    "cantidad": 1000,
+    "tc": 1500,
+    "comisionistaId": "",
+    "comision": 0,
+    "comisionMoneda": "USD",
+    "formaPago": "efectivo",
+    "formaRetiro": "efectivo",
+    "partesPago": [],
+    "partesDivisa": [],
+    "lugarPago": "retiro",
+    "lugarDivisa": "retiro",
+    "entregaPago": "retiro",
+    "entregaDivisa": "retiro",
+    "patasHechas": {
+     "pago": true,
+     "divisa": true
+    },
+    "patasFechas": {
+     "pago": "2026-08-10",
+     "divisa": "2026-08-11"
+    },
+    "ok": "Completado",
+    "cancelado": false,
+    "lugar": "retiro",
+    "_patasFijas": true
+   },
+   {
+    "id": "op13",
+    "numero": 13,
+    "tipo": "venta",
+    "fecha": "2026-08-11",
+    "clienteId": "c1",
+    "monedaPago": "USD",
+    "monedaPagoOtra": "",
+    "moneda": "ARS",
+    "monedaOtra": "",
+    "cantidad": 612000,
+    "tc": 0.00065359477124183,
+    "comisionistaId": "",
+    "comision": 0,
+    "comisionMoneda": "USD",
+    "formaPago": "efectivo",
+    "formaRetiro": "efectivo",
+    "partesPago": [],
+    "partesDivisa": [],
+    "lugarPago": "retiro",
+    "lugarDivisa": "retiro",
+    "entregaPago": "retiro",
+    "entregaDivisa": "retiro",
+    "patasHechas": {
+     "pago": true,
+     "divisa": true
+    },
+    "patasFechas": {
+     "divisa": "2026-08-12"
+    },
+    "ok": "Completado",
+    "cancelado": false,
+    "lugar": "retiro",
+    "_patasFijas": true
    }
   ],
   "cripto": [
@@ -1709,6 +1884,43 @@
     "cancelado": false,
     "costo": 2,
     "costoA": "cliente",
+    "monedaPagoOtra": "",
+    "monedaOtra": "",
+    "_alineado": true
+   },
+   {
+    "id": "cr3",
+    "numero": 3,
+    "tipo": "compra",
+    "fecha": "2026-08-10",
+    "clienteId": "c1",
+    "monedaPago": "ARS",
+    "moneda": "USDT",
+    "cantidad": 2000,
+    "tc": 1490,
+    "comisionistaId": "",
+    "comision": 0,
+    "comisionMoneda": "USD",
+    "formaPago": "efectivo",
+    "formaRetiro": "transferencia",
+    "partesPago": null,
+    "partesDivisa": null,
+    "lugarPago": "retiro",
+    "lugarDivisa": "",
+    "entregaPago": "retiro",
+    "entregaDivisa": "—",
+    "patasHechas": {
+     "pago": true,
+     "divisa": true
+    },
+    "patasFechas": {
+     "pago": "2026-08-11",
+     "divisa": "2026-08-11"
+    },
+    "ok": "Completado",
+    "cancelado": false,
+    "costo": 3,
+    "costoA": "cueva",
     "monedaPagoOtra": "",
     "monedaOtra": "",
     "_alineado": true
@@ -1848,6 +2060,37 @@
     "estado": "ejecutado",
     "cancelado": false,
     "obs": "CASO DISCRIMINANTE: cargado el 10 (dia CERRADO) y ejecutado el 11"
+   },
+   {
+    "id": "cb5",
+    "numero": 5,
+    "fecha": "2026-08-10",
+    "fechaEjecucion": "2026-08-10",
+    "clienteId": "c1",
+    "comisionistaId": "",
+    "tipo": "Subida",
+    "monto": 3000,
+    "costoPct": 0.5,
+    "margenPct": 1.5,
+    "formaMayorista": "transferencia",
+    "formaCliente": "efectivo",
+    "partesMayorista": [],
+    "partesCliente": [],
+    "lugarMayorista": "",
+    "lugarCliente": "retiro",
+    "entregaMayorista": "",
+    "entregaCliente": "retiro",
+    "patasHechas": {
+     "mayorista": true,
+     "cliente": true
+    },
+    "patasFechas": {
+     "mayorista": "2026-08-10",
+     "cliente": "2026-08-11"
+    },
+    "estado": "ejecutado",
+    "cancelado": false,
+    "obs": ""
    }
   ],
   "ctacte": [
