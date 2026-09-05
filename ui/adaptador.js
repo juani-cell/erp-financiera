@@ -27,66 +27,116 @@
   almacen[CLAVE_DATOS] = JSON.stringify(inicial.documento || {});
   almacen[CLAVE_SESION] = JSON.stringify(inicial.sesion || null);
 
-  // ── Aviso al usuario ──────────────────────────────────────────────────────
-  // Con `localStorage` guardar no falla nunca. Contra un servidor SÍ puede
-  // fallar: otra persona guardó primero, o se tocó un día cerrado. Un guardado
-  // que falla en silencio es la peor forma de perder trabajo, así que se ve.
-  var barra;
-  function avisar(texto, tipo) {
-    if (!barra) {
-      barra = document.createElement('div');
-      barra.style.cssText =
-        'position:fixed;left:0;right:0;top:0;z-index:99999;padding:10px 16px;' +
-        'font:600 13px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;' +
-        'text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.15)';
-      document.body.appendChild(barra);
+  // ── El indicador de estado ────────────────────────────────────────────────
+  // Con `localStorage` guardar no falla NUNCA, así que el prototipo no necesita
+  // decir nada. Contra un servidor sí puede fallar, y lo que no se puede es que
+  // alguien cierre la pantalla creyendo que guardó. Por eso el indicador es
+  // PERMANENTE mientras haya algo sin confirmar: no es un cartel que pasa, es
+  // un estado que se queda hasta que el servidor diga que sí.
+  var chapa, detalle, estadoActual = null, mensajeActual = '';
+  var ESTILOS = {
+    guardando: { fondo: '#4a6fa5', texto: '#fff', icono: '⟳', label: 'Guardando…' },
+    sinGuardar:{ fondo: '#a86b1e', texto: '#fff', icono: '●', label: 'SIN GUARDAR' },
+    guardado:  { fondo: '#1e7d3a', texto: '#fff', icono: '✓', label: 'Guardado' },
+    error:     { fondo: '#b3261e', texto: '#fff', icono: '⚠', label: 'NO SE GUARDÓ' }
+  };
+  var ocultarLuego;
+
+  function mostrar(estado, texto) {
+    if (!chapa) {
+      chapa = document.createElement('div');
+      chapa.style.cssText =
+        'position:fixed;right:16px;bottom:16px;z-index:2147483647;max-width:420px;' +
+        'padding:10px 14px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.22);' +
+        'font:600 13px/1.35 -apple-system,BlinkMacSystemFont,sans-serif;cursor:default';
+      detalle = document.createElement('div');
+      detalle.style.cssText = 'font-weight:400;margin-top:5px;font-size:12px;opacity:.95';
+      chapa.appendChild(document.createElement('span'));
+      chapa.appendChild(detalle);
+      (document.body || document.documentElement).appendChild(chapa);
     }
-    barra.textContent = texto;
-    barra.style.background = tipo === 'error' ? '#b3261e' : '#1e7d3a';
-    barra.style.color = '#fff';
-    barra.style.display = 'block';
-    if (tipo !== 'error') setTimeout(function () { barra.style.display = 'none'; }, 1800);
+    estadoActual = estado; mensajeActual = texto || '';
+    var e = ESTILOS[estado];
+    chapa.style.background = e.fondo;
+    chapa.style.color = e.texto;
+    chapa.firstChild.textContent = e.icono + '  ' + e.label;
+    detalle.textContent = texto || '';
+    detalle.style.display = texto ? 'block' : 'none';
+    chapa.style.display = 'block';
+
+    clearTimeout(ocultarLuego);
+    // "Guardado" es lo único que se va solo. Todo lo demás se queda: si hay algo
+    // sin confirmar, tiene que seguir a la vista.
+    if (estado === 'guardado') {
+      ocultarLuego = setTimeout(function () { chapa.style.display = 'none'; }, 2000);
+    }
   }
 
   // ── Guardado ──────────────────────────────────────────────────────────────
-  var pendiente = null, enVuelo = false, temporizador = null;
+  var pendiente = null;      // el documento que falta confirmar
+  var enVuelo = false;
+  var reintentos = 0;
+  var temporizador, temporizadorReintento;
 
   function mandar() {
     if (enVuelo || pendiente === null) return;
-    var doc = pendiente; pendiente = null; enVuelo = true;
+    // ⚠️ El documento NO se descarta acá. Una versión anterior hacía
+    // `doc = pendiente; pendiente = null;` y si el guardado fallaba ese cambio
+    // se perdía para siempre, sin reintento y sin más rastro que un cartel.
+    var doc = pendiente;
+    enVuelo = true;
+    mostrar('guardando');
     fetch('/estado', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'same-origin',
       body: JSON.stringify({ version: version, documento: doc })
     }).then(function (r) {
-      return r.json().then(function (cuerpo) { return { ok: r.ok, estado: r.status, cuerpo: cuerpo }; });
+      return r.json().catch(function () { return {}; })
+              .then(function (cuerpo) { return { ok: r.ok, estado: r.status, cuerpo: cuerpo }; });
     }).then(function (res) {
       enVuelo = false;
+
       if (res.ok) {
         version = res.cuerpo.version;
-        avisar('Guardado', 'ok');
-        if (pendiente !== null) mandar();
+        reintentos = 0;
+        // Sólo ahora se da por confirmado, y sólo si nadie escribió encima
+        // mientras viajaba.
+        if (pendiente === doc) { pendiente = null; mostrar('guardado'); }
+        else { mandar(); }
         return;
       }
+
       if (res.estado === 401) {
-        avisar('Se cerró la sesión. Volvé a entrar.', 'error');
-        setTimeout(function () { location.href = '/'; }, 2000);
+        mostrar('error', 'Se cerró la sesión. Volvé a entrar; tus cambios siguen acá hasta que lo hagas.');
         return;
       }
+
       var motivo = (res.cuerpo && res.cuerpo.detail && res.cuerpo.detail.motivo) ||
-                   (res.cuerpo && res.cuerpo.detail) || 'no se pudo guardar';
+                   (res.cuerpo && res.cuerpo.detail) || 'el servidor rechazó el guardado';
+
       // Un conflicto de versión NO se reintenta pisando: la única salida
       // correcta es recargar y que la persona vea lo que hizo la otra.
       if (res.estado === 409 && /guard/i.test(String(motivo))) {
-        avisar('Otra persona guardó cambios. Recargando para no pisarlos…', 'error');
-        setTimeout(function () { location.reload(); }, 2500);
+        mostrar('error', 'Otra persona guardó cambios. Recargando para no pisarlos…');
+        setTimeout(function () { location.reload(); }, 2800);
         return;
       }
-      avisar('NO SE GUARDÓ: ' + motivo, 'error');
+
+      // Rechazo por una REGLA (día cerrado, sólo lectura). Reintentar no sirve:
+      // el servidor va a decir lo mismo. El cambio se queda a la vista para que
+      // la persona lo deshaga o lo corrija, y no se pierde en silencio.
+      mostrar('error', motivo + '  ·  El cambio NO se guardó y sigue en pantalla: corregilo o recargá para descartarlo.');
     }).catch(function (e) {
+      // Falla de RED, que sí conviene reintentar sola: la conexión de una
+      // oficina se cae y vuelve, y no tiene sentido perder trabajo por eso.
       enVuelo = false;
-      avisar('NO SE GUARDÓ (sin conexión con el servidor): ' + e.message, 'error');
+      reintentos++;
+      var espera = Math.min(30000, 1000 * Math.pow(2, reintentos));
+      mostrar('error', 'Sin conexión con el servidor (' + e.message + '). ' +
+              'Reintentando en ' + Math.round(espera / 1000) + ' s. No cierres esta pantalla.');
+      clearTimeout(temporizadorReintento);
+      temporizadorReintento = setTimeout(mandar, espera);
     });
   }
 
@@ -97,6 +147,7 @@
       almacen[k] = String(v);
       if (k !== CLAVE_DATOS) return;          // la sesión la maneja el servidor
       try { pendiente = JSON.parse(v); } catch (e) { return; }
+      mostrar('sinGuardar');
       // Se agrupan los cambios seguidos: la app guarda en cada tecla y no tiene
       // sentido mandar el documento entero por cada una.
       clearTimeout(temporizador);
@@ -120,7 +171,7 @@
     window.localStorage = falso;
   }
 
-  // Un cambio sin guardar no se pierde por cerrar la pestaña sin avisar.
+  // Un cambio sin confirmar no se pierde por cerrar la pestaña sin mirar.
   window.addEventListener('beforeunload', function (e) {
     if (pendiente !== null || enVuelo) {
       clearTimeout(temporizador); mandar();
@@ -128,4 +179,13 @@
       return '';
     }
   });
+
+  // Para poder afirmar en una prueba si hay algo sin confirmar, sin adivinar
+  // mirando pixeles.
+  window.__erpEstadoGuardado = function () {
+    return { pendiente: pendiente !== null, enVuelo: enVuelo, version: version,
+             visible: !!chapa && chapa.style.display !== 'none',
+             estado: estadoActual, mensaje: mensajeActual,
+             leyenda: chapa ? chapa.textContent : null };
+  };
 })();

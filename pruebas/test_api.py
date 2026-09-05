@@ -33,7 +33,20 @@ from pruebas.test_estado import MAPEADAS, diferencias  # noqa: E402
 # la aplicación en memoria. Es el camino que va a usar el navegador: HTTP real,
 # cookies reales, serialización real. Un test en memoria puede pasar y la cosa
 # fallar igual en el primer request de verdad.
-PUERTO = 8765
+def _puerto_libre() -> int:
+    """Un puerto que el sistema operativo diga que está libre.
+
+    Clavarlo a mano es frágil: la primera versión usaba el 8765 y en esta
+    máquina lo tenía tomado otro servidor de Juani, así que el test daba 404 y
+    501 sin que nada estuviera mal en la API.
+    """
+    import socket
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+PUERTO = _puerto_libre()
 BASE = f"http://127.0.0.1:{PUERTO}"
 
 
