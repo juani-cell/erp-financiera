@@ -14,10 +14,10 @@ create temp table resultado (n int, prueba text, esperado text, obtenido text) o
 
 do $probar$
 declare
-  v_cli   uuid;
-  v_op    uuid;
-  v_pata  uuid;
-  v_op2   uuid;
+  v_cli   text;
+  v_op    text;
+  v_pata  text;
+  v_op2   text;
   v_hoy   date := current_date;
   v_cerr  date := current_date - 1;   -- el día de ayer va a quedar CERRADO
   v_audit bigint;
@@ -123,7 +123,7 @@ begin
   -- ── 8 · Una pata colgando de una operación Y de un cable: TIENE QUE FALLAR
   begin
     insert into pata (operacion_id, cable_id, clave, monto, moneda, forma)
-      values (v_op, gen_random_uuid(), 'zz-3', 1, 'USD', 'efectivo');
+      values (v_op, gen_random_uuid()::text, 'zz-3', 1, 'USD', 'efectivo');
     insert into resultado values (8,'una pata colgando de dos cosas','RECHAZA','dejó pasar 🔴');
   exception when others then
     insert into resultado values (8,'una pata colgando de dos cosas','RECHAZA','rechazó ✅');
