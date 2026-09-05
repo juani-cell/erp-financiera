@@ -6,10 +6,13 @@ que si un cálculo viviera en la pantalla, el chatbot daría un número distinto
 que muestra el sistema.
 """
 
+import json
 import logging
 import os
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel
 
 from . import auth, db, repositorio
@@ -181,17 +184,49 @@ class EstadoEntrante(BaseModel):
     documento: dict
 
 
-@app.get("/estado")
-def obtener_estado(usuario: dict = Depends(sesion_actual)) -> dict:
-    with db.pool().connection() as conn:
-        version, doc = repositorio.leer_estado(conn)
+# ════════════════════════════════════════════════════════════════════════════
+# Preparar el documento para la UI
+# ════════════════════════════════════════════════════════════════════════════
+
+# 🔴 El prototipo trae, adentro de `migrar()` (la función que corre en CADA
+# carga), tres bloques que BORRAN todas las colecciones. Están guardados por
+# banderas que quedan en los datos, así que corren una vez por navegador. En el
+# prototipo es intencional: Agus quería arrancar de cero para probar.
+#
+# Nosotros no guardamos esas banderas, porque no son un dato del negocio: son un
+# artefacto de su entorno. Pero si el documento llega sin ellas, `migrar()` cree
+# que nunca reseteó y BORRA TODO al abrir. Pasó exactamente eso la primera vez
+# que conecté la UI: el estado llegaba entero al navegador y la app mostraba
+# "todavía no hay clientes cargados".
+#
+# Así que se marcan como ya hechas al entregar el documento. Va acá y no en el
+# navegador para que valga para cualquier cliente de esta API.
+MIGRACIONES_DESTRUCTIVAS_YA_HECHAS = {
+    "_patasFechasLimpio": True,
+    "_datosEnCero": True,
+    "_datosEnCeroV2": True,
+    "_datosEnCeroV3": True,
+}
+
+
+def _para_la_ui(doc: dict, usuario: dict) -> dict:
+    doc = dict(doc)
+    doc.update(MIGRACIONES_DESTRUCTIVAS_YA_HECHAS)
     # Los usuarios NUNCA viajan con su contraseña. La UI sólo necesita saber
-    # quién es el que está adentro para decidir qué muestra.
+    # quién está adentro para decidir qué muestra.
     doc["usuarios"] = [{"id": usuario["id"], "usuario": usuario["usuario"],
                         "nombre": usuario["nombre"], "rol": usuario["rol"],
                         "estado": "activo"}]
     doc["operador"] = usuario["nombre"]
-    return {"version": version, "documento": doc, "usuario": usuario}
+    return doc
+
+
+@app.get("/estado")
+def obtener_estado(usuario: dict = Depends(sesion_actual)) -> dict:
+    with db.pool().connection() as conn:
+        version, doc = repositorio.leer_estado(conn)
+    return {"version": version, "documento": _para_la_ui(doc, usuario),
+            "usuario": usuario}
 
 
 @app.put("/estado")
@@ -220,3 +255,66 @@ def guardar(entrante: EstadoEntrante, usuario: dict = Depends(sesion_actual)) ->
         msg = str(getattr(e, "diag", None) and e.diag.message_primary or e)
         log.warning("guardado rechazado: %s", msg[:200])
         raise HTTPException(status_code=409, detail={"motivo": msg[:300]}) from e
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# Servir la aplicación
+# ════════════════════════════════════════════════════════════════════════════
+
+UI = Path(__file__).resolve().parent.parent / "ui"
+
+
+def _inyectar(html: str, estado: dict) -> str:
+    """Mete el adaptador y el estado en el HTML de Agus, sin tocar el archivo.
+
+    Va ANTES del primer <script> de la página: el adaptador tiene que haber
+    reemplazado el almacén cuando la app arranque y lo lea.
+    """
+    adaptador = (UI / "adaptador.js").read_text(encoding="utf-8")
+    # `</script>` adentro de los datos cerraría la etiqueta antes de tiempo, y
+    # `<` escapado evita además cualquier intento de inyectar HTML desde un dato
+    # que alguien haya cargado (el nombre de un cliente, una observación).
+    datos = json.dumps(estado, ensure_ascii=False, default=str).replace("<", "\\u003c")
+    bloque = (f"<script>window.__ERP_ESTADO__ = {datos};</script>\n"
+              f"<script>{adaptador}</script>\n")
+    marca = "<head>"
+    i = html.find(marca)
+    if i < 0:
+        raise RuntimeError("el HTML de la UI no tiene <head>: no sé dónde inyectar")
+    return html[:i + len(marca)] + "\n" + bloque + html[i + len(marca):]
+
+
+@app.get("/", include_in_schema=False)
+def raiz(peticion: Request) -> Response:
+    token = peticion.cookies.get(COOKIE)
+    with db.pool().connection() as conn:
+        u = _usuario_de_sesion(conn, token)
+    if u:
+        return RedirectResponse("/app", status_code=302)
+    return HTMLResponse((UI / "entrar.html").read_text(encoding="utf-8"))
+
+
+@app.get("/app", include_in_schema=False)
+def aplicacion(peticion: Request) -> Response:
+    # Acá NO se usa la dependencia de sesión: `/app` es una PÁGINA, y sin sesión
+    # tiene que mandar al login, no mostrarle un JSON de error en la cara a
+    # quien vuelve a la mañana con la sesión vencida. El 401 en JSON es la
+    # respuesta correcta para `/estado`, que consume el adaptador, no para esto.
+    with db.pool().connection() as conn:
+        usuario = _usuario_de_sesion(conn, peticion.cookies.get(COOKIE))
+        if not usuario:
+            return RedirectResponse("/", status_code=302)
+        version, doc = repositorio.leer_estado(conn)
+    estado = {
+        "version": version,
+        "documento": _para_la_ui(doc, usuario),
+        # La app espera encontrar una sesión ya iniciada en el almacén, así que
+        # nunca ve su propia pantalla de login: el login de verdad ya pasó acá,
+        # contra el servidor, con la contraseña derivada.
+        "sesion": {"usuario": usuario["usuario"], "nombre": usuario["nombre"],
+                   "rol": usuario["rol"],
+                   "rolLabel": {"admin": "Administrador", "operador": "Operador",
+                                "lectura": "Sólo lectura"}[usuario["rol"]]},
+    }
+    html = _inyectar((UI / "app.html").read_text(encoding="utf-8"), estado)
+    return HTMLResponse(html, headers={"Cache-Control": "no-store"})

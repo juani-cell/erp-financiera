@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ERP Financiera</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         background:#faf9f5; font:14px/1.5 -apple-system,BlinkMacSystemFont,sans-serif; color:#1a1a1a }
+  form { width:320px; padding:32px; background:#fff; border:1px solid #e5e3dd; border-radius:10px }
+  h1 { font-size:13px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+       color:#8a8578; margin:0 0 4px }
+  h2 { font-size:20px; margin:0 0 24px }
+  label { display:block; font-size:12px; color:#6b675e; margin:14px 0 5px }
+  input { width:100%; padding:9px 11px; border:1px solid #d9d6cd; border-radius:6px; font-size:14px }
+  input:focus { outline:2px solid #4a6fa5; outline-offset:-1px; border-color:transparent }
+  button { width:100%; margin-top:22px; padding:10px; border:0; border-radius:6px;
+           background:#4a6fa5; color:#fff; font-size:14px; font-weight:600; cursor:pointer }
+  button:disabled { opacity:.6; cursor:default }
+  #error { margin-top:14px; padding:9px 11px; border-radius:6px; background:#fdeceb;
+           color:#b3261e; font-size:13px; display:none }
+</style>
+<form id="f">
+  <h1>ERP Financiera</h1>
+  <h2>Iniciar sesión</h2>
+  <label for="u">Usuario</label>
+  <input id="u" name="usuario" autocomplete="username" autofocus required>
+  <label for="c">Contraseña</label>
+  <input id="c" name="clave" type="password" autocomplete="current-password" required>
+  <button id="b" type="submit">Ingresar</button>
+  <div id="error"></div>
+</form>
+<script>
+document.getElementById('f').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  var b = document.getElementById('b'), err = document.getElementById('error');
+  b.disabled = true; err.style.display = 'none';
+  try {
+    var r = await fetch('/sesion', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      credentials: 'same-origin',
+      body: JSON.stringify({usuario: u.value, clave: c.value})
+    });
+    if (r.ok) { location.href = '/app'; return; }
+    var d = await r.json().catch(function(){ return {}; });
+    err.textContent = d.detail || 'No se pudo entrar.';
+  } catch (x) {
+    err.textContent = 'No se pudo contactar al servidor.';
+  }
+  err.style.display = 'block'; b.disabled = false;
+});
+</script>

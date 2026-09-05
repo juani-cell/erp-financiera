@@ -23,6 +23,7 @@ import os
 from pathlib import Path
 
 import pgserver
+import psycopg
 
 PGDATA = Path.home() / ".cache" / "erp-financiera" / "pgdata"
 ESQUEMA = Path(__file__).parent.parent / "esquema"
@@ -72,7 +73,21 @@ def arrancar(recrear: bool = True) -> str:
                     raise RuntimeError(
                         f"la migración {archivo.name} falló: {e}") from e
 
-    return uri.replace("postgresql://postgres@", f"postgresql://erp_app:{CLAVE_APP}@")
+    # ⚠️ La URI de pgserver viene como `postgresql://postgres:@/...` (con dos
+    # puntos), así que un reemplazo de "postgres@" no engancha y la conexión
+    # quedaba como SUPERUSUARIO sin que nada avisara. Con eso, "la auditoría no
+    # se puede borrar" daría verde sin significar nada: el dueño de las tablas
+    # puede todo. Por eso además de armar la URL, se VERIFICA el rol.
+    import re
+    url = re.sub(r"^postgresql://postgres:?@",
+                 f"postgresql://erp_app:{CLAVE_APP}@", uri)
+    with psycopg.connect(url) as conn:
+        rol = conn.execute("select current_user").fetchone()[0]
+    if rol != "erp_app":
+        raise RuntimeError(
+            f"la base local quedó conectada como {rol!r} y no como 'erp_app'. "
+            "Las pruebas de permisos no probarían nada.")
+    return url
 
 
 def usar() -> str:

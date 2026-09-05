@@ -56,7 +56,18 @@ def levantar_servidor():
     proc.terminate()
     sys.exit("🔴 el servidor no levantó en 30 s")
 
-CASOS = json.loads((AQUI / "casos.json").read_text(encoding="utf-8"))
+# ⚠️ Se carga `referencia.json.datosNormalizados` y NO `casos.json`.
+# `casos.json` es el archivo CRUDO. La app no trabaja con eso: al cargar, su
+# `migrar()` lo normaliza (da vuelta las operaciones cargadas al revés, agrega
+# marcas suyas, completa campos). Si la base guarda la forma cruda, cada carga
+# produce un diff contra lo guardado, y basta que roce un día cerrado para que
+# el disparador bloquee CUALQUIER guardado. Pasó exactamente eso.
+#
+# Regla general que sale de acá, y vale para la carga inicial del cliente:
+# **el dato tiene que llegar a la base en su forma final, antes de que se cierre
+# ningún día.**
+CASOS = json.loads(
+    (AQUI / "referencia.json").read_text(encoding="utf-8"))["datosNormalizados"]
 resultados: list[tuple[str, bool, str]] = []
 
 # 🔴 Los usuarios de prueba se crean acá y se BORRAN al terminar, con
@@ -152,6 +163,23 @@ def main() -> None:
         difs += diferencias(CASOS.get(col), doc.get(col), col)
     check("lo que vuelve es idéntico a lo que se guardó",
           not difs, f"{len(difs)} diferencias: {difs[:3]}")
+
+    print("\n── Guardar sin cambios no toca NADA ──")
+    # Es el invariante que evita toda una clase de errores: si volver a guardar
+    # lo mismo reescribe filas, cada carga choca contra cualquier día cerrado y
+    # el sistema deja de poder guardar. Se mide en la AUDITORÍA, que es donde se
+    # ve lo que de verdad se escribió.
+    with db.pool().connection() as c:
+        antes = c.execute("select count(*) from auditoria").fetchone()[0]
+    r = cli.put("/estado", json={"version": nueva, "documento": doc})
+    check("guardar el mismo documento pasa", r.status_code == 200, r.text[:180])
+    if r.status_code == 200:
+        nueva = r.json()["version"]
+    with db.pool().connection() as c:
+        despues = c.execute("select count(*) from auditoria").fetchone()[0]
+    check("y NO escribió ni una fila", antes == despues,
+          f"la auditoría pasó de {antes} a {despues}: se reescribieron "
+          f"{despues - antes} filas que nadie tocó")
 
     print("\n── Que dos socios no se pisen ──")
     r = cli.put("/estado", json={"version": version, "documento": CASOS})

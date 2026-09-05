@@ -18,6 +18,46 @@ from __future__ import annotations
 from datetime import date, datetime
 from decimal import Decimal
 
+# Los campos que el mapeo reproduce por su cuenta. TODO lo demás va a `extra`
+# y vuelve tal cual: el documento que manda la UI trae campos que `migrar()`
+# agrega (`_patasFijas`, `_alineado`, `lugar`) y perder uno solo genera un diff
+# fantasma en cada carga. Si ese diff roza un día cerrado, bloquea el guardado
+# entero. Ver la migración 008 del esquema.
+REPRODUCIDAS = {
+    "op": {"id", "numero", "tipo", "fecha", "clienteId", "comisionistaId",
+           "cantidad", "tc", "comision", "comisionMoneda", "formaPago",
+           "formaRetiro", "partesPago", "partesDivisa", "lugarPago",
+           "lugarDivisa", "entregaPago", "entregaDivisa", "patasHechas",
+           "patasFechas", "ok", "cancelado", "costo", "costoA",
+           "moneda", "monedaPago"},
+    "cable": {"id", "numero", "fecha", "fechaEjecucion", "tipo", "clienteId",
+              "comisionistaId", "monto", "costoPct", "margenPct", "estado",
+              "cancelado", "obs", "formaMayorista", "formaCliente",
+              "partesMayorista", "partesCliente", "lugarMayorista",
+              "lugarCliente", "entregaMayorista", "entregaCliente",
+              "patasHechas", "patasFechas"},
+    "titular": {"id", "numero", "nombre", "contacto", "alta", "obs",
+                "direcciones", "tipo", "comisionPct"},
+    "ctacte": {"id", "clienteId", "fecha", "moneda", "monto", "tipoMov",
+               "motivo", "efectivo", "lugar", "entrega"},
+    "gasto": {"id", "fecha", "motivo", "moneda", "monto", "montoOriginal",
+              "socio", "obs"},
+    "aporte": {"id", "socio", "fecha", "moneda", "monto", "concepto"},
+    "cotiz": {"id", "fecha", "momento"},
+}
+
+
+def _extra(reg: dict, cual: str) -> dict | None:
+    """Lo que el mapeo no reproduce, para devolverlo tal cual vino."""
+    sobra = {k: v for k, v in reg.items() if k not in REPRODUCIDAS[cual]}
+    # Una lista NULA no es lo mismo que una lista VACÍA a la hora de devolver el
+    # documento igual, aunque el prototipo las trate igual al calcular.
+    for k in ("partesPago", "partesDivisa", "partesMayorista", "partesCliente"):
+        if k in REPRODUCIDAS[cual] and k in reg and reg[k] is None:
+            sobra[k] = None
+    return sobra or None
+
+
 # Las colecciones del documento que viajan a tablas de verdad.
 CLASES_OP = {"ops": "cambio", "cripto": "cripto", "mayoristaOps": "tesoreria"}
 COLECCION_DE_CLASE = {v: k for k, v in CLASES_OP.items()}
@@ -106,7 +146,8 @@ def a_filas(doc: dict) -> dict[str, list[dict]]:
                                      nombre=t.get("nombre"), contacto=t.get("contacto"),
                                      alta=t.get("alta"), obs=t.get("obs"), activo=True,
                                      comision_pct=t.get("comisionPct"),
-                                     rol=t.get("tipo")))
+                                     rol=t.get("tipo"),
+                                     extra=_extra(t, "titular")))
             for i, dirx in enumerate(t.get("direcciones") or []):
                 f["direccion"].append(dict(id=f"{t['id']}·dir{i}", titular_id=t["id"],
                                            alias=dirx.get("alias"), calle=dirx.get("calle"),
@@ -128,7 +169,8 @@ def a_filas(doc: dict) -> dict[str, list[dict]]:
                 estado=o.get("ok") or "Pendiente", cancelado=bool(o.get("cancelado")),
                 lugar_pago=o.get("lugarPago"), lugar_divisa=o.get("lugarDivisa"),
                 entrega_pago=o.get("entregaPago"), entrega_divisa=o.get("entregaDivisa"),
-                forma_pago=o.get("formaPago"), forma_retiro=o.get("formaRetiro")))
+                forma_pago=o.get("formaPago"), forma_retiro=o.get("formaRetiro"),
+                extra=_extra(o, "op")))
             for p in _patas_de_operacion(o, mon_pago, mon_div):
                 f["pata"].append(dict(id=f"{o['id']}·{p['clave']}", operacion_id=o["id"],
                                       cable_id=None, **p))
@@ -143,7 +185,8 @@ def a_filas(doc: dict) -> dict[str, list[dict]]:
             forma_mayorista=c.get("formaMayorista"), forma_cliente=c.get("formaCliente"),
             cancelado=bool(c.get("cancelado")), obs=c.get("obs"),
             lugar_mayorista=c.get("lugarMayorista"), lugar_cliente=c.get("lugarCliente"),
-            entrega_mayorista=c.get("entregaMayorista"), entrega_cliente=c.get("entregaCliente")))
+            entrega_mayorista=c.get("entregaMayorista"), entrega_cliente=c.get("entregaCliente"),
+            extra=_extra(c, "cable")))
         for p in _patas_de_cable(c):
             f["pata"].append(dict(id=f"{c['id']}·{p['clave']}", operacion_id=None,
                                   cable_id=c["id"], **p))
@@ -153,18 +196,19 @@ def a_filas(doc: dict) -> dict[str, list[dict]]:
             id=m["id"], titular_id=m.get("clienteId"), fecha=m.get("fecha"),
             moneda=m.get("moneda"), monto=m.get("monto") or 0, tipo_mov=m.get("tipoMov"),
             motivo=m.get("motivo"), efectivo=bool(m.get("efectivo")),
-            lugar=m.get("lugar"), entrega=m.get("entrega")))
+            lugar=m.get("lugar"), entrega=m.get("entrega"),
+            extra=_extra(m, "ctacte")))
 
     for g in doc.get("gastos") or []:
         f["gasto"].append(dict(id=g["id"], fecha=g.get("fecha"), motivo=g.get("motivo"),
                                moneda=g.get("moneda"), monto=g.get("monto") or 0,
                                monto_original=g.get("montoOriginal"), socio=g.get("socio"),
-                               obs=g.get("obs")))
+                               obs=g.get("obs"), extra=_extra(g, "gasto")))
 
     for a in doc.get("aportes") or []:
         f["aporte"].append(dict(id=a["id"], socio=a.get("socio"), fecha=a.get("fecha"),
                                 moneda=a.get("moneda"), monto=a.get("monto") or 0,
-                                concepto=a.get("concepto")))
+                                concepto=a.get("concepto"), extra=_extra(a, "aporte")))
 
     for fecha, cierre in (doc.get("cierres") or {}).items():
         f["cierre_diario"].append(dict(fecha=fecha, params=cierre))
@@ -172,7 +216,8 @@ def a_filas(doc: dict) -> dict[str, list[dict]]:
     for i, c in enumerate(doc.get("cotiz") or []):
         valores = {k: v for k, v in c.items() if k not in ("fecha", "momento", "id")}
         f["cotizacion"].append(dict(id=c.get("id") or f"cotiz·{c.get('fecha')}·{c.get('momento')}",
-                                    fecha=c.get("fecha"), momento=c.get("momento"), valores=valores))
+                                    fecha=c.get("fecha"), momento=c.get("momento"), valores=valores,
+                                    extra=None))
 
     if doc.get("params") is not None:
         f["config"].append(dict(clave="params", valor=doc["params"]))
@@ -284,6 +329,7 @@ def a_documento(f: dict[str, list[dict]]) -> dict:
             reg["comisionPct"] = _num(t.get("comision_pct"))
         if t.get("alta") is not None:
             reg["alta"] = t["alta"]
+        reg.update(t.get("extra") or {})
         doc[coleccion].append(reg)
 
     patas_por_op: dict[str, list] = {}
@@ -324,6 +370,7 @@ def a_documento(f: dict[str, list[dict]]) -> dict:
             # Tesorería es contra el mayorista: no hay cliente ni comisión.
             for k in ("clienteId", "comision", "comisionMoneda"):
                 reg.pop(k, None)
+        reg.update(o.get("extra") or {})
         doc[COLECCION_DE_CLASE[o["clase"]]].append(reg)
 
     doc["cables"] = []
@@ -344,24 +391,25 @@ def a_documento(f: dict[str, list[dict]]) -> dict:
             cancelado=bool(c.get("cancelado")), obs=c.get("obs") or "")
         if "patasFechas" in pt:
             reg["patasFechas"] = pt["patasFechas"]
+        reg.update(c.get("extra") or {})
         doc["cables"].append(reg)
 
     doc["ctacte"] = [dict(id=m["id"], clienteId=m.get("titular_id"), fecha=m.get("fecha"),
                           moneda=m.get("moneda"), monto=_num(m.get("monto")),
                           tipoMov=m.get("tipo_mov"), motivo=m.get("motivo"),
                           efectivo=bool(m.get("efectivo")), lugar=m.get("lugar") or "",
-                          entrega=m.get("entrega") or "")
+                          entrega=m.get("entrega") or "", **(m.get("extra") or {}))
                      for m in f.get("movimiento_cc") or []]
 
     doc["gastos"] = [dict(id=g["id"], fecha=g.get("fecha"), motivo=g.get("motivo"),
                           moneda=g.get("moneda"), monto=_num(g.get("monto")),
                           montoOriginal=_num(g.get("monto_original")), socio=g.get("socio"),
-                          obs=g.get("obs") or "")
+                          obs=g.get("obs") or "", **(g.get("extra") or {}))
                      for g in f.get("gasto") or []]
 
     doc["aportes"] = [dict(id=a["id"], socio=a.get("socio"), fecha=a.get("fecha"),
                            moneda=a.get("moneda"), monto=_num(a.get("monto")),
-                           concepto=a.get("concepto"))
+                           concepto=a.get("concepto"), **(a.get("extra") or {}))
                       for a in f.get("aporte") or []]
 
     doc["cierres"] = {c["fecha"]: c["params"] for c in f.get("cierre_diario") or []}

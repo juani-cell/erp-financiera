@@ -91,10 +91,28 @@ def main() -> None:
 
     print()
     print("=" * 72)
-    print("2 · SIGNIFICADO · ¿los cálculos dan lo mismo sobre el documento que volvió?")
+    print("2 · EL DOCUMENTO QUE LA APP REALMENTE MANDA")
     print("=" * 72)
-    d0 = ref["datosNormalizados"]
-    d1 = a_documento(a_filas(d0))
+    # `casos.json` es el archivo crudo. La app NO manda eso: manda lo que su
+    # propia migración produce al cargar (da vuelta operaciones cargadas al
+    # revés, agrega marcas suyas, completa campos). Probar sólo el archivo crudo
+    # dejó pasar 41 campos que se perdían, y cada uno genera un diff fantasma en
+    # cada carga: si roza un día cerrado, bloquea TODO guardado.
+    norm = ref["datosNormalizados"]
+    vuelta_n = a_documento(a_filas(norm))
+    for col in MAPEADAS:
+        d = diferencias(norm.get(col), vuelta_n.get(col), col)
+        fallas += d
+        print(f"  {col:16s} {'✅' if not d else '🔴 ' + str(len(d)) + ' diferencias'}")
+    for l in [x for x in fallas if x.startswith(tuple(MAPEADAS))][:12]:
+        print(f"     · {l}")
+
+    print()
+    print("=" * 72)
+    print("3 · SIGNIFICADO · ¿los cálculos dan lo mismo sobre el documento que volvió?")
+    print("=" * 72)
+    d0 = norm
+    d1 = vuelta_n
     # Lo que no viaja se repone tal cual estaba: el test mide el mapeo, no la
     # ausencia de cosas que ya sabemos que no van por acá.
     for k, v in d0.items():

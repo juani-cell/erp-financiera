@@ -37,7 +37,10 @@ TABLAS: list[tuple[str, str]] = [
 ]
 CIERRES = ("cierre_diario", "fecha")
 
-JSONB = {"config": {"valor"}, "cierre_diario": {"params"}, "cotizacion": {"valores"}}
+JSONB = {"config": {"valor"}, "cierre_diario": {"params"},
+         "cotizacion": {"valores", "extra"},
+         "titular": {"extra"}, "operacion": {"extra"}, "cable": {"extra"},
+         "movimiento_cc": {"extra"}, "gasto": {"extra"}, "aporte": {"extra"}}
 
 
 def _adaptar(tabla: str, fila: dict) -> dict:
@@ -89,15 +92,38 @@ def _diff(viejas: list[dict], nuevas: list[dict], pk: str):
     return altas, cambios, bajas
 
 
+# El dominio `monto` es numeric(20,6): la base redondea a 6 decimales al
+# guardar. Comparar con más precisión que eso marca como CAMBIADA una fila que
+# la base va a escribir exactamente igual.
+DECIMALES = 6
+
+
 def _igual(a, b) -> bool:
+    """¿La base guardaría estos dos valores igual?
+
+    Ésa es la pregunta correcta, y no "¿son idénticos en Python?". Dos errores
+    que salieron de confundirlas, y los dos hacían que CADA guardado reescribiera
+    todas las operaciones (y por lo tanto chocara con cualquier día cerrado):
+
+    · un `jsonb` comparado como texto: mismo contenido, distinto orden de claves;
+    · `15300000.000000` contra `15299999.999999998`, que es la misma plata en una
+      columna de 6 decimales.
+    """
     if a is None and b is None:
         return True
     if a is None or b is None:
         return False
     if isinstance(a, bool) or isinstance(b, bool):
         return bool(a) is bool(b)
+    if isinstance(a, (dict, list)) or isinstance(b, (dict, list)):
+        norm = lambda v: json.dumps(  # noqa: E731
+            json.loads(v) if isinstance(v, str) else v, sort_keys=True, default=str)
+        try:
+            return norm(a) == norm(b)
+        except (TypeError, ValueError):
+            return str(a) == str(b)
     try:
-        return abs(float(a) - float(b)) < 1e-9
+        return round(float(a), DECIMALES) == round(float(b), DECIMALES)
     except (TypeError, ValueError):
         pass
     return str(a) == str(b)
