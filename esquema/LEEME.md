@@ -60,3 +60,51 @@ al final**. Si va cerrando a medida que avanza, el disparador lo bloquea a sí
 mismo: agregar una pata a un día ya cerrado está prohibido, y con razón.
 
 Lo destapó el test, no un incidente.
+
+---
+
+## La ida y vuelta del estado (Etapa 4)
+
+La UI que reusamos guarda todo en **un solo documento** y lo manda entero.
+`api/estado.py` lo parte en filas y lo vuelve a armar.
+
+**La regla que ordena ese archivo:** lo que la base no sepa reproducir se pierde
+en el **primer** guardado, sin error y sin aviso. El usuario ve un campo vacío y
+no hay nada en ningún log que lo explique. Por eso el test compara **documento
+contra documento**, no tabla contra tabla.
+
+| Test | Qué prueba |
+|---|---|
+| `pruebas/test_estado.py` | Que el mapeo no pierda nada **en memoria**, y que los cálculos den los mismos números sobre el documento que volvió |
+| `pruebas/test_estado_en_base.py` | Lo mismo **contra Postgres**: tipos, nulos, `numeric`, `jsonb`. Un dato escrito no es un dato leído |
+
+### Lo que encontraron, y ninguna fue por inspección
+
+1. **`comisionPct` se perdía.** Es un dato de negocio: el porcentaje del operador.
+2. **`formaPago` se perdía en toda operación con partes.** El prototipo guarda la
+   forma de la operación *y además* la de cada parte; derivarla de las patas
+   borraba la primera.
+3. **Comisionista y Mayorista no son lo mismo.** Viven en la misma lista pero son
+   roles distintos: al comisionista se le paga comisión, el mayorista es la
+   contraparte de tesorería.
+4. **El cliente no lleva `tipo` en el documento crudo y sí en el normalizado.**
+   Suponer cualquiera de las dos formas rompía `cuentas()`.
+5. **La ausencia de una clave en `patasHechas` es información.** Una pata de
+   cuenta corriente nunca figura ahí, y esa ausencia es la que define que
+   arranque completada. Reponerla cambiaba el cálculo.
+6. **`alta` no puede ser obligatoria**: el cliente la trae y el comisionista no.
+   Lo cazó la base al rechazar el insert, no una revisión.
+
+### Una diferencia que NO es una diferencia
+
+Un `tc` de `1.0` vuelve de Postgres como `1`. **No se arregla y no es una
+concesión**: quien consume esto es JavaScript, que tiene un solo tipo de número.
+Verificado en el navegador: `JSON.parse('1.0') === JSON.parse('1')` da `true`, y
+el propio navegador reserializa `1.0` como `1`, así que el prototipo escribiría
+exactamente lo mismo. La distinción sólo existe en Python.
+
+### 🔴 El orden de carga no es negociable
+
+`cierre_diario` va **último**. Cerrar un día antes de cargar sus operaciones hace
+que el disparador de día cerrado bloquee la propia carga. Es la misma
+restricción que va a tener el importador de la carga inicial.

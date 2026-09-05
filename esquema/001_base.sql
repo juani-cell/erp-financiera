@@ -18,6 +18,14 @@
 
 create extension if not exists pgcrypto;
 
+-- ── Los identificadores son TEXTO, no uuid ──────────────────────────────────
+-- El prototipo genera sus ids con `'x' + Math.random().toString(36)` (por
+-- ejemplo `x4vbodgj`). Si la base los reemplazara por uuid, el estado que le
+-- devolvemos al cliente no sería el que nos mandó, y habría que mantener una
+-- tabla de equivalencias entre "el id de allá" y "el id de acá". Con texto la
+-- ida y vuelta es idéntica y esa clase de bug no existe.
+-- El default cubre las filas que creemos nosotros desde el servidor.
+
 -- ── Dinero ──────────────────────────────────────────────────────────────────
 -- numeric(20,6): 14 dígitos enteros alcanzan para pesos con inflación, y 6
 -- decimales para cripto. Nunca `float`/`double`: 0.1 + 0.2 no da 0.3 y en los
@@ -49,20 +57,21 @@ insert into moneda (codigo, nombre, familia_usd, decimales, orden) values
 -- Clientes y comisionistas/mayoristas comparten forma y ambos tienen cuenta
 -- corriente, así que van en una tabla con un discriminador.
 create table titular (
-  id       uuid primary key default gen_random_uuid(),
+  id       text primary key default gen_random_uuid()::text,
   clase    text not null check (clase in ('cliente','comisionista')),
   numero   integer not null,
   nombre   text not null,
   contacto text,
-  alta     date not null default current_date,
+  -- Nula a propósito: el cliente trae fecha de alta y el comisionista no.
+  alta     date,
   obs      text,
   activo   boolean not null default true,
   unique (clase, numero)
 );
 
 create table direccion (
-  id         uuid primary key default gen_random_uuid(),
-  titular_id uuid not null references titular(id) on delete cascade,
+  id         text primary key default gen_random_uuid()::text,
+  titular_id text not null references titular(id) on delete cascade,
   alias      text,
   calle      text,
   piso       text,
@@ -80,7 +89,7 @@ create table cierre_diario (
 );
 
 create table cotizacion (
-  id      uuid primary key default gen_random_uuid(),
+  id      text primary key default gen_random_uuid()::text,
   fecha   date not null,
   momento text not null check (momento in ('apertura','cierre')),
   -- El orden entre cotizaciones del mismo día se resuelve por este campo y por
@@ -95,13 +104,13 @@ create table cotizacion (
 -- tratan igual, así que van juntas con un discriminador. Los cables son otra
 -- cosa (monto único, dos porcentajes, patas con otros nombres) y van aparte.
 create table operacion (
-  id              uuid primary key default gen_random_uuid(),
+  id              text primary key default gen_random_uuid()::text,
   numero          integer not null,
   clase           text not null check (clase in ('cambio','cripto','tesoreria')),
   tipo            text not null check (tipo in ('compra','venta')),
   fecha           date not null,
-  cliente_id      uuid references titular(id),
-  comisionista_id uuid references titular(id),
+  cliente_id      text references titular(id),
+  comisionista_id text references titular(id),
   moneda_pago     text not null references moneda(codigo),
   moneda          text not null references moneda(codigo),
   cantidad        monto not null,
@@ -126,13 +135,13 @@ create index on operacion (fecha);
 create index on operacion (cliente_id) where cliente_id is not null;
 
 create table cable (
-  id              uuid primary key default gen_random_uuid(),
+  id              text primary key default gen_random_uuid()::text,
   numero          integer not null unique,
   fecha           date not null,
   fecha_ejecucion date,
   tipo            text not null check (tipo in ('Subida','Bajada')),
-  cliente_id      uuid references titular(id),
-  comisionista_id uuid references titular(id),
+  cliente_id      text references titular(id),
+  comisionista_id text references titular(id),
   monto           monto not null check (monto > 0),
   -- Puede ser NEGATIVO: cuando el mayorista paga en lugar de cobrar. El
   -- traslado al cliente se topa en cero (caso `cb2` del arnés).
@@ -151,9 +160,9 @@ create index on cable (fecha);
 -- cargó la operación» (Agus, 5/9, tras hablar con Tomi). Es trade date vs
 -- settlement date.
 create table pata (
-  id            uuid primary key default gen_random_uuid(),
-  operacion_id  uuid references operacion(id) on delete cascade,
-  cable_id      uuid references cable(id) on delete cascade,
+  id            text primary key default gen_random_uuid()::text,
+  operacion_id  text references operacion(id) on delete cascade,
+  cable_id      text references cable(id) on delete cascade,
   -- 'pago', 'pago-0', 'divisa-1', 'mayorista', 'cliente'
   clave         text not null,
   monto         monto not null,
@@ -183,8 +192,8 @@ create index on pata (cable_id);
 
 -- ── Cuenta corriente, gastos y aportes ──────────────────────────────────────
 create table movimiento_cc (
-  id         uuid primary key default gen_random_uuid(),
-  titular_id uuid not null references titular(id),
+  id         text primary key default gen_random_uuid()::text,
+  titular_id text not null references titular(id),
   fecha      date not null,
   moneda     text not null references moneda(codigo),
   monto      monto not null,
@@ -199,7 +208,7 @@ create table movimiento_cc (
 create index on movimiento_cc (titular_id, fecha);
 
 create table gasto (
-  id             uuid primary key default gen_random_uuid(),
+  id             text primary key default gen_random_uuid()::text,
   fecha          date not null,
   motivo         text not null,
   moneda         text not null references moneda(codigo),
@@ -213,7 +222,7 @@ create table gasto (
 -- netearlos: sin eso, el día que se cargan los saldos de apertura el sistema
 -- informa como ganancia todo el capital del cliente (medido: 133.444,82).
 create table aporte (
-  id       uuid primary key default gen_random_uuid(),
+  id       text primary key default gen_random_uuid()::text,
   socio    text not null,
   fecha    date not null,
   moneda   text not null references moneda(codigo),
