@@ -53,6 +53,35 @@ def levantar_servidor():
 CASOS = json.loads((AQUI / "casos.json").read_text(encoding="utf-8"))
 resultados: list[tuple[str, bool, str]] = []
 
+# 🔴 Los usuarios de prueba se crean acá y se BORRAN al terminar, con
+# contraseñas nuevas en cada corrida.
+# El motivo: la primera versión los dejaba dados de alta en la base, y como
+# todavía no hay un ambiente de prueba separado, eso era una cuenta de
+# ADMINISTRADOR con contraseña conocida contra una URL pública. Lo descubrí
+# probando la API de producción de punta a punta, no leyendo el código.
+import secrets  # noqa: E402
+from api.auth import hashear_clave  # noqa: E402
+
+USUARIOS = {
+    "prueba_admin":   {"rol": "admin",   "clave": secrets.token_urlsafe(24)},
+    "prueba_lectura": {"rol": "lectura", "clave": secrets.token_urlsafe(24)},
+}
+
+
+def crear_usuarios_de_prueba() -> None:
+    with db.pool().connection() as c:
+        for nombre, u in USUARIOS.items():
+            c.execute("delete from usuario where usuario = %s", (nombre,))
+            c.execute("insert into usuario (usuario, nombre, rol, clave_hash) "
+                      "values (%s, %s, %s, %s)",
+                      (nombre, f"Prueba {u['rol']}", u["rol"], hashear_clave(u["clave"])))
+
+
+def borrar_usuarios_de_prueba() -> None:
+    with db.pool().connection() as c:
+        for nombre in USUARIOS:
+            c.execute("delete from usuario where usuario = %s", (nombre,))
+
 
 def check(nombre: str, ok: bool, detalle: str = "") -> None:
     resultados.append((nombre, ok, detalle))
@@ -80,7 +109,7 @@ def main() -> None:
     r = cli.get("/estado")
     check("sin sesión no se puede leer el estado", r.status_code == 401, str(r.status_code))
 
-    r = cli.post("/sesion", json={"usuario": "tester", "clave": "mal"})
+    r = cli.post("/sesion", json={"usuario": "prueba_admin", "clave": "mal"})
     check("contraseña incorrecta → 401", r.status_code == 401, str(r.status_code))
     msg_mala = r.json().get("detail")
 
@@ -89,7 +118,7 @@ def main() -> None:
           r.status_code == 401 and r.json().get("detail") == msg_mala,
           f"{r.status_code} {r.json().get('detail')!r} vs {msg_mala!r}")
 
-    r = cli.post("/sesion", json={"usuario": "tester", "clave": "prueba-e2e-no-usar-en-serio"})
+    r = cli.post("/sesion", json={"usuario": "prueba_admin", "clave": USUARIOS["prueba_admin"]["clave"]})
     check("contraseña correcta → entra", r.status_code == 200, r.text[:120])
     check("la respuesta NO trae la contraseña", "clave" not in r.text.lower(), r.text[:120])
     check("la cookie de sesión es httpOnly",
@@ -147,7 +176,7 @@ def main() -> None:
 
     print("\n── Sólo lectura ──")
     cli2 = httpx.Client(base_url=BASE, timeout=30)
-    r = cli2.post("/sesion", json={"usuario": "mirona", "clave": "solo-lectura-prueba"})
+    r = cli2.post("/sesion", json={"usuario": "prueba_lectura", "clave": USUARIOS["prueba_lectura"]["clave"]})
     check("el usuario de sólo lectura entra", r.status_code == 200, r.text[:120])
     r = cli2.get("/estado")
     check("y puede LEER", r.status_code == 200, str(r.status_code))
@@ -156,10 +185,10 @@ def main() -> None:
 
     print("\n── Bloqueo por intentos ──")
     cli3 = httpx.Client(base_url=BASE, timeout=30)
-    codigos = [cli3.post("/sesion", json={"usuario": "mirona", "clave": "x"}).status_code
+    codigos = [cli3.post("/sesion", json={"usuario": "prueba_lectura", "clave": "x"}).status_code
                for _ in range(6)]
     check("tras 5 intentos fallidos bloquea (429)", codigos[-1] == 429, str(codigos))
-    r = cli3.post("/sesion", json={"usuario": "mirona", "clave": "solo-lectura-prueba"})
+    r = cli3.post("/sesion", json={"usuario": "prueba_lectura", "clave": USUARIOS["prueba_lectura"]["clave"]})
     check("y ni con la contraseña BUENA entra mientras está bloqueado",
           r.status_code == 429, str(r.status_code))
     with db.pool().connection() as c:
@@ -181,9 +210,13 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    crear_usuarios_de_prueba()
     servidor = levantar_servidor()
     try:
         main()
     finally:
         servidor.terminate()
         servidor.wait(timeout=10)
+        # Se borran SIEMPRE, aunque el test falle: un usuario de prueba que
+        # sobrevive a una corrida es una cuenta con contraseña conocida.
+        borrar_usuarios_de_prueba()
