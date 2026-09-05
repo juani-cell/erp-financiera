@@ -61,6 +61,17 @@ globalThis.Date = class extends __Date {
   static now() { return __FIJO; }
 };
 
+// Azar congelado, por el mismo motivo que el reloj: `uid()` del prototipo es
+// 'x' + Math.random().toString(36), asi que los ids de los registros que crea
+// al migrar cambian en cada corrida y la referencia deja de ser reproducible
+// byte a byte. Este arnes promete que, cuando cambia una regla, el diff de la
+// referencia se revisa a mano: un diff con ruido ensena a ignorar diffs.
+let __semilla = 0x2F6E2B1;
+Math.random = () => {
+  __semilla = (__semilla * 1664525 + 1013904223) >>> 0;
+  return __semilla / 4294967296;
+};
+
 class DCLogicStub {
   constructor(p) { this.props = p || {}; }
   setState(o) { this.state = Object.assign({}, this.state, typeof o === 'function' ? o(this.state) : o); }
@@ -136,11 +147,62 @@ def main() -> None:
         sys.exit(1)
 
     ref = json.loads(r.stdout)
+
+    # ── PISO DE INTEGRIDAD ────────────────────────────────────────────────
+    # Un gate que dice ✅ sobre una corrida vacía no es un gate.
+    # Esto pasó de verdad el 3/9/2026: una migración del prototipo
+    # (`_datosEnCero`, `_datosEnCeroV2`, `_datosEnCeroV3`) vacía TODAS las
+    # colecciones al cargar, y este generador reportó los cuatro cálculos
+    # en ✅ con una referencia de 5 KB en lugar de 36 KB.
+    # Cero filas no es "pasó": es que el test no corrió.
+    fallas = []
+
+    # 1. ¿Los datos de entrada sobrevivieron a migrar()?
+    entrada = json.loads((AQUI / "casos.json").read_text(encoding="utf-8"))
+    dn = ref.get("datosNormalizados") or {}
+    for coll, v in entrada.items():
+        if coll.startswith("_") or not isinstance(v, (list, dict)):
+            continue
+        antes, despues = len(v), len(dn.get(coll) or [])
+        if despues < antes:
+            fallas.append(
+                f"{coll}: entraron {antes} registros y quedaron {despues} "
+                f"despues de migrar()")
+
+    # 2. ¿Cada cálculo devolvió algo? Un cálculo vacío no sirve de contrato.
+    def vacio(v):
+        if v is None:
+            return True
+        if isinstance(v, list):
+            return len(v) == 0
+        if isinstance(v, dict):
+            if "rows" in v:
+                return len(v["rows"]) == 0
+            if "saldos" in v:
+                return len(v["saldos"]) == 0
+            return len(v) == 0
+        return False
+
+    for k in CALCULOS + ["cuentas"]:
+        v = ref.get(k)
+        if isinstance(v, dict) and "__error" in v:
+            continue          # lo reporta el bloque de errores, no dupliquemos
+        if vacio(v):
+            fallas.append(f"{k}: el calculo devolvio VACIO")
+
+    if fallas:
+        print("\n  🔴 LA REFERENCIA NO SE GUARDA. El prototipo corrio, pero:")
+        for f in fallas:
+            print(f"     · {f}")
+        print("\n  Si el prototipo trae una migracion que borra datos, hay que")
+        print("  fijar sus banderas en casos.json para neutralizarla.")
+        sys.exit(1)
+
+    # Recién ahora se escribe: una referencia invalida en disco es peor que
+    # ninguna, porque se puede commitear sin que nadie la mire.
     (AQUI / "referencia.json").write_text(
         json.dumps(ref, ensure_ascii=False, indent=1), encoding="utf-8")
 
-    # Un gate tiene que poder afirmar algo. Si todos los cálculos vinieron vacíos
-    # o con error, la referencia no sirve y hay que decirlo, no guardarla igual.
     problemas = [k for k in CALCULOS + ["cuentas"]
                  if isinstance(ref.get(k), dict) and "__error" in ref[k]]
     print(f"  referencia.json: {len(json.dumps(ref)):,} bytes")

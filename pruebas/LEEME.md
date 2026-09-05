@@ -84,3 +84,61 @@ Cambiar `var_tc = 0 si es el primer día` por `reval_anterior - (prev or 0)` dej
 gate en verde, y está bien: en el primer día no hay posición anterior, así que
 `reval_anterior` vale cero y las dos formas son **equivalentes**. No es un agujero.
 Conviene saber distinguir una cosa de la otra antes de salir a agregar casos.
+
+---
+
+## El piso de integridad: por qué un ✅ podía no significar nada
+
+**Pasó de verdad el 3/9/2026.** Agus subió una versión nueva del prototipo que trae
+esto adentro de `migrar()`, la función que corre en cada carga:
+
+```js
+// reseteo pedido: dejar el sistema en cero (operaciones, aportes, gastos)...
+if (!d._datosEnCero) {
+  d.ops = []; d.cripto = []; d.mayoristaOps = []; d.cables = [];
+  d.gastos = []; d.aportes = []; d.ctacte = []; d.cotiz = []; d.cierres = {};
+  d._datosEnCero = true;
+}
+if (!d._datosEnCeroV2) { d.clientes = []; d.comisionistas = []; ... }
+if (!d._datosEnCeroV3) { ...; d.audit = []; ... }
+```
+
+En el prototipo es intencional y está bien: quería empezar de cero para probar.
+
+Lo que no estaba bien era **este generador**: los 40 casos entraron, `migrar()` los
+borró todos, los cuatro cálculos devolvieron vacío, y el generador imprimió
+**`✅` en los cuatro** y guardó una referencia de 5 KB en lugar de 36 KB.
+Un gate que dice verde sobre una corrida vacía no es un gate.
+
+### Los tres controles que se agregaron
+
+1. **¿Sobrevivieron los datos de entrada?** Se comparan los registros de
+   `casos.json` contra los que quedaron en `datosNormalizados` después de
+   `migrar()`. Si alguna colección se encoge, sale en rojo con el detalle.
+2. **¿Cada cálculo devolvió algo?** Un cálculo vacío no sirve como contrato.
+3. **La referencia se escribe DESPUÉS de validar.** Antes se escribía primero y
+   se salía con error después, así que una referencia inválida quedaba en disco
+   lista para commitear sin que nadie la mirara.
+
+### Y se congeló el azar, además del reloj
+
+`uid()` del prototipo es `'x' + Math.random().toString(36)`, así que los ids de
+los registros que crea al migrar cambiaban en cada corrida y la referencia no era
+reproducible byte a byte. Este arnés promete que **cuando cambia una regla, el
+diff de la referencia se revisa a mano**: un diff con ruido enseña a ignorar diffs.
+Ahora dos corridas seguidas dan el mismo archivo.
+
+### Cómo se probó que el piso sirve
+
+| Test | Contra qué | Resultado |
+|---|---|---|
+| Negativo | la versión de Agus que borra (`b43ff04`) | 🔴 rojo, nombra las 11 colecciones vaciadas, **y no pisa la referencia** |
+| Positivo | la versión con la que se generó (`aad7603`) | ✅ verde, referencia idéntica |
+
+Un control que no se demuestra que atrapa la cosa es sólo más código.
+
+### Para medir qué cambió una versión nueva del prototipo
+
+Si el prototipo trae una migración destructiva, hay que **fijar sus banderas** en
+`casos.json` (`_datosEnCero: true`, etc.) para neutralizarla. Recién entonces el
+diff de la referencia muestra el cambio de comportamiento real y no el borrado.
