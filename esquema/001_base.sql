@@ -16,8 +16,10 @@
 --      control; esto sí lo es.
 -- ════════════════════════════════════════════════════════════════════════════
 
-create extension if not exists pgcrypto;
-
+-- `gen_random_uuid()` está en el NÚCLEO de Postgres desde la 13, así que no hace
+-- falta la extensión `pgcrypto`. Se sacó porque el Postgres embebido que usan
+-- las pruebas no la trae, y una dependencia que no se necesita es una que puede
+-- faltar justo donde no la probaste.
 -- ── Los identificadores son TEXTO, no uuid ──────────────────────────────────
 -- El prototipo genera sus ids con `'x' + Math.random().toString(36)` (por
 -- ejemplo `x4vbodgj`). Si la base los reemplazara por uuid, el estado que le

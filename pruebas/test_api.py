@@ -16,8 +16,14 @@ from pathlib import Path
 AQUI = Path(__file__).parent
 sys.path.insert(0, str(AQUI.parent))
 os.environ.setdefault("ENTORNO", "desarrollo")
-if not os.environ.get("DATABASE_URL"):
-    os.environ["DATABASE_URL"] = os.environ.get("ERP_DATABASE_URL", "")
+
+# Base LOCAL y descartable. No es una comodidad: las pruebas corrían contra la
+# misma base que sirve la URL pública y así dejé una cuenta de administrador con
+# contraseña conocida en internet. Un resto de un test no puede ser una
+# exposición real. Poniendo DATABASE_URL a mano se puede apuntar a staging, pero
+# eso es una decisión explícita y no el default.
+from pruebas import base_local          # noqa: E402
+base_local.usar()
 
 import httpx                                     # noqa: E402
 from api import db                               # noqa: E402

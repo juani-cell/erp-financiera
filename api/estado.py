@@ -15,6 +15,9 @@ Lo que este módulo NO traduce, a propósito:
 """
 from __future__ import annotations
 
+from datetime import date, datetime
+from decimal import Decimal
+
 # Las colecciones del documento que viajan a tablas de verdad.
 CLASES_OP = {"ops": "cambio", "cripto": "cripto", "mayoristaOps": "tesoreria"}
 COLECCION_DE_CLASE = {v: k for k, v in CLASES_OP.items()}
@@ -231,6 +234,29 @@ def _armar_patas(patas: list[dict], base_pago: str, base_div: str):
     return salida
 
 
+def _json_puro(v):
+    """Convierte lo que Postgres devuelve en tipos que el documento entiende.
+
+    `psycopg` devuelve `date` donde el documento tiene "2026-08-11", y `Decimal`
+    donde tiene un número. Con FastAPI en el medio no se nota, porque serializa
+    igual; pero entonces el contrato de este módulo sería "documento entra,
+    CASI el mismo documento sale", y eso se paga en el primer consumidor que no
+    sea la API (una herramienta, el acceso por chat). Se normaliza acá, que es
+    donde el contrato se promete.
+    """
+    if isinstance(v, dict):
+        return {str(k): _json_puro(x) for k, x in v.items()}
+    if isinstance(v, list):
+        return [_json_puro(x) for x in v]
+    if isinstance(v, (date, datetime)):
+        return v.isoformat()[:10] if isinstance(v, date) and not isinstance(v, datetime) \
+            else v.isoformat()
+    if isinstance(v, Decimal):
+        f = float(v)
+        return int(f) if f == int(f) else f
+    return v
+
+
 def a_documento(f: dict[str, list[dict]]) -> dict:
     """Filas → documento, con la forma exacta que espera la UI."""
     doc: dict = {}
@@ -348,4 +374,4 @@ def a_documento(f: dict[str, list[dict]]) -> dict:
         if c["clave"] == "params":
             doc["params"] = c["valor"]
 
-    return doc
+    return _json_puro(doc)
