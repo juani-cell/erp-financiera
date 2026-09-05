@@ -891,5 +891,9 @@
  },
  "usuarios": [],
  "audit": [],
- "operador": "Administrador"
+ "operador": "Administrador",
+ "_patasFechasLimpio": true,
+ "_datosEnCero": true,
+ "_datosEnCeroV2": true,
+ "_datosEnCeroV3": true
 }
