@@ -211,7 +211,14 @@ def a_filas(doc: dict) -> dict[str, list[dict]]:
                                 concepto=a.get("concepto"), extra=_extra(a, "aporte")))
 
     for fecha, cierre in (doc.get("cierres") or {}).items():
-        f["cierre_diario"].append(dict(fecha=fecha, params=cierre))
+        # 🔴 `cerrado` va a su PROPIA columna, no adentro del jsonb: es lo que
+        # lee el disparador del día cerrado. La entrada sobrevive a la
+        # reapertura (con `cerrado: false`) porque es donde viven los
+        # parámetros congelados, así que "existe la fila" NO es "está cerrado".
+        c = cierre if isinstance(cierre, dict) else {}
+        f["cierre_diario"].append(dict(fecha=fecha,
+                                       cerrado=bool(c.get("cerrado", True)),
+                                       params=c.get("params")))
 
     for i, c in enumerate(doc.get("cotiz") or []):
         valores = {k: v for k, v in c.items() if k not in ("fecha", "momento", "id")}
@@ -412,7 +419,9 @@ def a_documento(f: dict[str, list[dict]]) -> dict:
                            concepto=a.get("concepto"), **(a.get("extra") or {}))
                       for a in f.get("aporte") or []]
 
-    doc["cierres"] = {c["fecha"]: c["params"] for c in f.get("cierre_diario") or []}
+    doc["cierres"] = {str(c["fecha"]): {"cerrado": bool(c.get("cerrado")),
+                                        "params": c.get("params")}
+                      for c in f.get("cierre_diario") or []}
 
     doc["cotiz"] = [dict(id=c["id"], fecha=c["fecha"], momento=c["momento"],
                          **(c.get("valores") or {}))

@@ -133,6 +133,28 @@ begin
   select count(*) into v_audit from auditoria where tabla in ('operacion','pata','titular');
   insert into resultado values (9,'la auditoría registró los cambios','>0 filas',
     case when v_audit > 0 then v_audit||' filas ✅' else 'CERO 🔴' end);
+  -- ── 12 · UN DÍA REABIERTO SE PUEDE EDITAR ────────────────────────────────
+  --         La fila de `cierre_diario` SOBREVIVE a la reapertura, con
+  --         `cerrado=false`, porque es donde viven los parámetros congelados.
+  --         Si el disparador mirara sólo si la fila EXISTE, un socio reabriría
+  --         el día para corregir algo y el sistema se lo seguiría prohibiendo.
+  --         Es el bug de Agus al revés, y lo encontró la UAT, no un test.
+  update cierre_diario set cerrado = false where fecha = v_cerr;
+  begin
+    update operacion set cantidad = 4242 where id = v_op;
+    insert into resultado values (12,'editar una operación de un día REABIERTO','DEJA PASAR','dejó pasar ✅');
+  exception when others then
+    insert into resultado values (12,'editar una operación de un día REABIERTO','DEJA PASAR','rechazó 🔴 ('||sqlerrm||')');
+  end;
+
+  -- ── 13 · y al volver a cerrarlo, vuelve a proteger ───────────────────────
+  update cierre_diario set cerrado = true where fecha = v_cerr;
+  begin
+    update operacion set cantidad = 5353 where id = v_op;
+    insert into resultado values (13,'y al volver a cerrarlo vuelve a bloquear','RECHAZA','dejó pasar 🔴');
+  exception when others then
+    insert into resultado values (13,'y al volver a cerrarlo vuelve a bloquear','RECHAZA','rechazó ✅');
+  end;
 end
 $probar$;
 
